@@ -36,8 +36,5 @@ public class NoteService  {
         this.noteRepository.delete(note);
     }
 
-   public void updateNote(Note note){
-
-   }
 
 }
