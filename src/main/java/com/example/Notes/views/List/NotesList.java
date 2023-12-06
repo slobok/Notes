@@ -7,19 +7,24 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
 
 
 @Route(value = "",layout = MainLayout.class)
 public class NotesList extends VerticalLayout {
     private NoteService noteService;
+
+    private VerticalLayout noteslist = new VerticalLayout();
+
     NotesList(NoteService noteService){
         this.noteService = noteService;
-
+        this.noteslist = getAllNotes();
         add(
                 createNoteField(),
                 getAllNotes()
         );
+
     }
 
     private Component createNoteField(){
@@ -41,23 +46,57 @@ public class NotesList extends VerticalLayout {
 
         Button createNote = new Button("Create note");
         createNote.addClickListener(click -> {
-            this.noteService.saveNote(new Note(notesTitle.getValue(),textArea.getValue(),1L));
-            this.add(this.getAllNotes());
+            this.noteService.saveNote(new Note(notesTitle.getValue(), textArea.getValue(),1L));
+              notesTitle.setValue("");
+              textArea.setValue("");
+              this.updatePage();
         });
         newNote.add(notesTitle, textArea, createNote);
         return newNote;
     }
-    private Component getAllNotes(){
+    // Metoda koja dovlaci iz baze sve notese
+    private VerticalLayout getAllNotes(){
         VerticalLayout notesList = new VerticalLayout();
+        notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         this.noteService.getAllNotes().forEach(n -> {
+
+            VerticalLayout note = new VerticalLayout();
+            note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
+
+
+            note.setWidth("30%");
+            note.setMargin(true);
+            note.getStyle().setBorder("1px solid black");
+
             TextField notesTitle = new TextField();
             notesTitle.setValue(n.getTitle());
+            notesTitle.setLabel("Title");
+            notesTitle.getStyle().setMargin("0");
+
             TextField notesText = new TextField();
             notesText.setValue(n.getText());
+            notesText.setLabel("Notes text");
+            notesText.getStyle().setMargin("0");
 
-            notesList.add(notesText);
+            Button deleteButton = new Button("Delete");
+            deleteButton.addClickListener(click -> {
+                this.noteService.deleteNote(n);
+                this.updatePage();
+            });
+
+            note.add(notesTitle, notesText, deleteButton);
+
+            notesList.add(note);
                 }
         );
      return notesList;
+    }
+
+    private void updatePage(){
+        this.removeAll();
+        this.add(
+                this.createNoteField(),
+                this.getAllNotes()
+        );
     }
 }

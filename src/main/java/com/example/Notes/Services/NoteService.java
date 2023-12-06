@@ -22,5 +22,13 @@ public class NoteService  {
         this.noteRepository.save(note);
     }
 
+    public void deleteNote(Note note) throws IllegalArgumentException {
+        if (note == null){
+            throw new IllegalArgumentException("Note can not be null");
+        }
+        this.noteRepository.delete(note);
+    }
+
+
 
 }
