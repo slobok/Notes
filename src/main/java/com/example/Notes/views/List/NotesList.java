@@ -78,13 +78,25 @@ public class NotesList extends VerticalLayout {
             notesText.setLabel("Notes text");
             notesText.getStyle().setMargin("0");
 
+
             Button deleteButton = new Button("Delete");
             deleteButton.addClickListener(click -> {
                 this.noteService.deleteNote(n);
                 this.updatePage();
             });
 
-            note.add(notesTitle, notesText, deleteButton);
+            Button updateChanges = new Button("Save");
+            updateChanges.addClickListener(click -> {
+                Note noteToUpdate = new Note();
+                noteToUpdate.setId(n.getId());
+                noteToUpdate.setTitle(notesTitle.getValue());
+                noteToUpdate.setText(notesText.getValue());
+                noteToUpdate.setCreatedByUser(n.getCreatedByUser());
+                this.noteService.saveNote(noteToUpdate);
+                this.updatePage();
+            });
+
+            note.add(notesTitle, notesText, deleteButton, updateChanges);
 
             notesList.add(note);
                 }

@@ -19,7 +19,14 @@ public class NoteService  {
     }
 
     public void saveNote(Note note){
-        this.noteRepository.save(note);
+        try{
+            this.noteRepository.save(note);
+        }
+        catch (Exception e){
+            System.out.println(note);
+            throw new IllegalStateException("Nesto nije u redu");
+        }
+
     }
 
     public void deleteNote(Note note) throws IllegalArgumentException {
@@ -29,6 +36,8 @@ public class NoteService  {
         this.noteRepository.delete(note);
     }
 
+   public void updateNote(Note note){
 
+   }
 
 }
