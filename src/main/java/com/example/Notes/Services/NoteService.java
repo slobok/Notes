@@ -14,9 +14,13 @@ public class NoteService  {
         this.noteRepository = noteRepository;
     }
 
-    public List<Note> getAllNotes(){
-        return this.noteRepository.findAll();
-    }
+    public List<Note> getAllNotes(String searchText){
+        if (searchText.isEmpty() || searchText == null) {
+                return this.noteRepository.findAll();
+            }
+            return this.noteRepository.search(searchText);
+        }
+
 
     public void saveNote(Note note){
         try{

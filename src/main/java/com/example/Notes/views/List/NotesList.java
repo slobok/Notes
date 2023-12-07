@@ -4,6 +4,7 @@ import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,17 +15,29 @@ import com.vaadin.flow.router.Route;
 @Route(value = "",layout = MainLayout.class)
 public class NotesList extends VerticalLayout {
     private NoteService noteService;
-
+    private TextField searchField = new TextField();
     private VerticalLayout noteslist = new VerticalLayout();
 
     NotesList(NoteService noteService){
         this.noteService = noteService;
         this.noteslist = getAllNotes();
         add(
+                getSearchField(),
                 createNoteField(),
                 getAllNotes()
         );
 
+    }
+
+    private Component getSearchField() {
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setWidthFull();
+        this.searchField.setPlaceholder("Type to search");
+        searchField.addValueChangeListener(e -> {
+            this.updatePage();
+        });
+        hl.add(searchField);
+        return  hl;
     }
 
     private Component createNoteField(){
@@ -58,7 +71,7 @@ public class NotesList extends VerticalLayout {
     private VerticalLayout getAllNotes(){
         VerticalLayout notesList = new VerticalLayout();
         notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        this.noteService.getAllNotes().forEach(n -> {
+        this.noteService.getAllNotes(this.searchField.getValue()).forEach(n -> {
 
             VerticalLayout note = new VerticalLayout();
             note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
@@ -107,6 +120,7 @@ public class NotesList extends VerticalLayout {
     private void updatePage(){
         this.removeAll();
         this.add(
+                this.getSearchField(),
                 this.createNoteField(),
                 this.getAllNotes()
         );

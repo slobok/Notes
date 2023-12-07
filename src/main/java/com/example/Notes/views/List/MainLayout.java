@@ -32,7 +32,8 @@ public class MainLayout extends AppLayout {
         //  header.getStyle().setBorder("2px solid red");
         header.setWidthFull();
         header.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
-        header.add(drawerToggle, h1, search);
+        // Search izbacen zasad
+        header.add(drawerToggle, h1);
 
         addToNavbar(header);
     }
