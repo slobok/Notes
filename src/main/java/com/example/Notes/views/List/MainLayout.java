@@ -3,11 +3,12 @@ package com.example.Notes.views.List;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.HighlightConditions;
+import com.vaadin.flow.router.RouterLink;
 
 public class MainLayout extends AppLayout {
     MainLayout(){
@@ -38,12 +39,14 @@ public class MainLayout extends AppLayout {
         addToNavbar(header);
     }
     public void createDrawer(){
+        RouterLink notesList = new RouterLink("Notes",NotesList.class);
+        notesList.setHighlightCondition(HighlightConditions.sameLocation());
+        RouterLink trashedNotes = new RouterLink("Trash", TrashedNotes.class);
+        RouterLink archivedNotes = new RouterLink("Archive",ArchivedNotes.class);
         addToDrawer(new VerticalLayout(
-                new H6("Notes"),
-                new H6("Reminders"),
-                new H6("Edit labels"),
-                new H6("Archive"),
-                new H6("Trash")
+                notesList,
+                archivedNotes,
+                trashedNotes
         ));
     }
 

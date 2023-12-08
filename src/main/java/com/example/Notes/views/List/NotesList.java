@@ -14,29 +14,34 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "",layout = MainLayout.class)
 public class NotesList extends VerticalLayout {
-    private NoteService noteService;
-    private TextField searchField = new TextField();
-    private VerticalLayout noteslist = new VerticalLayout();
+    protected NoteService noteService;
+    private TextField search = new TextField();
+
+    public TextField getSearch() {
+        return search;
+    }
 
     NotesList(NoteService noteService){
         this.noteService = noteService;
-        this.noteslist = getAllNotes();
-        add(
+        addToConstructor();
+    }
+
+    protected void addToConstructor(){
+        this.add(
                 getSearchField(),
                 createNoteField(),
                 getAllNotes()
         );
-
     }
 
-    private Component getSearchField() {
+    protected Component getSearchField() {
         HorizontalLayout hl = new HorizontalLayout();
         hl.setWidthFull();
-        this.searchField.setPlaceholder("Type to search");
-        searchField.addValueChangeListener(e -> {
+        this.search.setPlaceholder("Type to search");
+        search.addValueChangeListener(e -> {
             this.updatePage();
         });
-        hl.add(searchField);
+        hl.add(search);
         return  hl;
     }
 
@@ -67,11 +72,13 @@ public class NotesList extends VerticalLayout {
         newNote.add(notesTitle, textArea, createNote);
         return newNote;
     }
+
+
     // Metoda koja dovlaci iz baze sve notese
-    private VerticalLayout getAllNotes(){
+    protected VerticalLayout getAllNotes(){
         VerticalLayout notesList = new VerticalLayout();
         notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        this.noteService.getAllNotes(this.searchField.getValue()).forEach(n -> {
+        this.noteService.getAllNotes(this.search.getValue()).forEach(n -> {
 
             VerticalLayout note = new VerticalLayout();
             note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
@@ -92,9 +99,14 @@ public class NotesList extends VerticalLayout {
             notesText.getStyle().setMargin("0");
 
 
-            Button deleteButton = new Button("Delete");
+            Button deleteButton = new Button("Move to trash");
             deleteButton.addClickListener(click -> {
-                this.noteService.deleteNote(n);
+                this.noteService.moveToTrash(n);
+                this.updatePage();
+            });
+            Button archiveButton = new Button("Archive");
+            archiveButton.addClickListener(click -> {
+                this.noteService.updateStateIsArchived(n.getId());
                 this.updatePage();
             });
 
@@ -105,11 +117,12 @@ public class NotesList extends VerticalLayout {
                 noteToUpdate.setTitle(notesTitle.getValue());
                 noteToUpdate.setText(notesText.getValue());
                 noteToUpdate.setCreatedByUser(n.getCreatedByUser());
+                
                 this.noteService.saveNote(noteToUpdate);
                 this.updatePage();
             });
 
-            note.add(notesTitle, notesText, deleteButton, updateChanges);
+            note.add(notesTitle, notesText, deleteButton, updateChanges, archiveButton);
 
             notesList.add(note);
                 }
@@ -117,7 +130,7 @@ public class NotesList extends VerticalLayout {
      return notesList;
     }
 
-    private void updatePage(){
+    protected void updatePage(){
         this.removeAll();
         this.add(
                 this.getSearchField(),
