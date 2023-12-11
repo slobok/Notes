@@ -4,6 +4,7 @@ import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -87,8 +88,9 @@ public class TrashedNotes extends NotesList  {
                     this.noteService.restoreNote(n.getId());
                     this.updatePage();
                 });
-
-                note.add(notesTitle, notesText, deleteButton, updateChanges, restore);
+                HorizontalLayout noteMenu = new HorizontalLayout();
+                noteMenu.add(deleteButton, updateChanges, restore);
+                note.add(notesTitle, notesText, noteMenu);
                 notesList.add(note);
             }
     );

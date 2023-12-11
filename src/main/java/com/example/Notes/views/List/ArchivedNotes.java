@@ -4,6 +4,7 @@ package com.example.Notes.views.List;
 import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -63,6 +64,8 @@ public class ArchivedNotes extends TrashedNotes {
                         noteToUpdate.setTitle(notesTitle.getValue());
                         noteToUpdate.setText(notesText.getValue());
                         noteToUpdate.setCreatedByUser(n.getCreatedByUser());
+                        noteToUpdate.setIsTrashed(n.getIsTrashed());
+                        noteToUpdate.setIsArchived(n.getIsArchived());
                         this.noteService.saveNote(noteToUpdate);
                         this.updatePage();
                     });
@@ -72,8 +75,9 @@ public class ArchivedNotes extends TrashedNotes {
                         this.noteService.unarchiveNote(n.getId());
                         this.updatePage();
                     });
-
-                    note.add(notesTitle, notesText, deleteButton, updateChanges, unarchiveButton);
+                    HorizontalLayout noteMenu = new HorizontalLayout();
+                    noteMenu.add(deleteButton, updateChanges, unarchiveButton);
+                    note.add(notesTitle, notesText, noteMenu);
                     notesList.add(note);
                 }
         );

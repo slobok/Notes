@@ -63,6 +63,12 @@ public class NotesList extends VerticalLayout {
             notesTitle.setVisible(true);
         });
 
+        HorizontalLayout noteMenu = new HorizontalLayout();
+        noteMenu.setAlignItems(Alignment.START);
+        noteMenu.getStyle().setBorder("1px solid black");
+        Icon imageIcon = new Icon("lumo","photo");
+        noteMenu.add(imageIcon);
+
 
 
         Button createNote = new Button("Create note");
@@ -72,7 +78,7 @@ public class NotesList extends VerticalLayout {
               textArea.setValue("");
               this.updatePage();
         });
-        newNote.add(notesTitle, textArea, createNote);
+        newNote.add(notesTitle, textArea, noteMenu, createNote);
         return newNote;
     }
 
@@ -85,11 +91,12 @@ public class NotesList extends VerticalLayout {
 
             VerticalLayout note = new VerticalLayout();
             note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
+            note.getStyle().setBoxShadow("2px 2px 5px linen");
 
 
             note.setWidth("30%");
             note.setMargin(true);
-            note.getStyle().setBorder("1px solid black");
+       //     note.getStyle().setBorder("1px solid black");
 
             TextField notesTitle = new TextField();
             notesTitle.setValue(n.getTitle());
@@ -120,12 +127,15 @@ public class NotesList extends VerticalLayout {
                 noteToUpdate.setTitle(notesTitle.getValue());
                 noteToUpdate.setText(notesText.getValue());
                 noteToUpdate.setCreatedByUser(n.getCreatedByUser());
-                
+                noteToUpdate.setIsTrashed(n.getIsTrashed());
+                noteToUpdate.setIsArchived(n.getIsArchived());
                 this.noteService.saveNote(noteToUpdate);
                 this.updatePage();
             });
 
-            note.add(notesTitle, notesText, deleteButton, updateChanges, archiveButton);
+            HorizontalLayout noteMenu = new HorizontalLayout();
+            noteMenu.add(deleteButton, updateChanges, archiveButton);
+            note.add(notesTitle, notesText, noteMenu);
 
             notesList.add(note);
                 }
