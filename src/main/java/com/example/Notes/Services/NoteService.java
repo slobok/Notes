@@ -23,7 +23,6 @@ public class NoteService {
         return this.noteRepository.search(searchText,  0,0);
     }
 
-
     public void saveNote(Note note) {
         try {
             this.noteRepository.save(note);
@@ -40,20 +39,22 @@ public class NoteService {
         }
         this.noteRepository.delete(note);
     }
+
    @Transactional
     public void updateStateIsTrashed(Long id) throws Exception {
         Optional<Note> optionalNote = this.noteRepository.findById(id);
         if (optionalNote.isEmpty()) {
             throw new IllegalStateException("Note does not exits");
         } else {
-            optionalNote.get().setTrashed(1);
+            optionalNote.get().setIsTrashed(1);
         }
     }
+
     @Transactional
     public void updateStateIsArchived(Long id) {
         Note note = this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Note with id " + "not founc"));
-        note.setArchived(1);
+        note.setIsArchived(1);
     }
 
     public List<Note> getAllTrashedNotes(String searchText) {
@@ -65,12 +66,11 @@ public class NoteService {
         }
     }
 
-
     @Transactional
     public void moveToTrash(Note note){
         Note n = this.noteRepository.findById(note.getId())
                 .orElseThrow(() ->  new IllegalStateException("Not found note"));
-     n.setTrashed(1);
+     n.setIsTrashed(1);
 }
 
     public List<Note> getAllArchivedNotes(String searchText) {
@@ -85,21 +85,18 @@ public class NoteService {
     public void deleteAll() {
         this.noteRepository.deleteAll(this.noteRepository.findByIsTrashed(1));
     }
-    @Transactional
-    public void setArchived(Long id){
-
-    }
 
     @Transactional
     public void restoreNote(Long id) {
         Note note = this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Note with id:" + id + " not found"));
-        note.setTrashed(0);
+        note.setIsTrashed(0);
     }
+
     @Transactional
     public void unarchiveNote(Long id) {
         Note note = this.noteRepository.findById(id)
                 .orElseThrow(() ->  new IllegalStateException("Note with id: " + id + " not found"));
-        note.setArchived(0);
+        note.setIsArchived(0);
     }
 }

@@ -55,22 +55,21 @@ public class Note {
         this.createdByUser = createdByUser;
     }
 
-    public int isTrashed() {
+    public int getIsTrashed() {
         return isTrashed;
     }
 
-    public void setTrashed(int trashed) {
-        isTrashed = trashed;
+    public void setIsTrashed(int isTrashed) {
+        this.isTrashed = isTrashed;
     }
 
-    public int isArchived() {
+    public int getIsArchived() {
         return isArchived;
     }
 
-    public void setArchived(int archived) {
-        isArchived = archived;
+    public void setIsArchived(int isArchived) {
+        this.isArchived = isArchived;
     }
-
 
     @Override
     public String toString() {

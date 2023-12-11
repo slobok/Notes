@@ -22,19 +22,19 @@ public class TrashedNotes extends NotesList  {
     @Override
     protected void addToConstructor(){
             add(
-                    emptyTrash(),
+                    emptyTrashButton(),
                     getSearchField(),
                     getAllNotes()
             );
     }
 
-    private Button emptyTrash() {
-        Button emptyTrash = new Button("Empty trash");
-        emptyTrash.addClickListener(click -> {
+    private Button emptyTrashButton() {
+        Button emptyTrashButton = new Button("Empty trash");
+        emptyTrashButton.addClickListener(click -> {
             this.noteService.deleteAll();
             this.updatePage();
         });
-        return emptyTrash;
+        return emptyTrashButton;
     }
 
 
@@ -75,11 +75,12 @@ public class TrashedNotes extends NotesList  {
                     noteToUpdate.setTitle(notesTitle.getValue());
                     noteToUpdate.setText(notesText.getValue());
                     noteToUpdate.setCreatedByUser(n.getCreatedByUser());
-                    noteToUpdate.setArchived(n.isArchived());
-                    noteToUpdate.setTrashed(n.isTrashed());
+                    noteToUpdate.setIsArchived(n.getIsArchived());
+                    noteToUpdate.setIsTrashed(n.getIsTrashed());
                     this.noteService.saveNote(noteToUpdate);
                     this.updatePage();
                 });
+
                 Button restore = new Button("Restore");
                 restore.addClickListener(klik -> {
                     this.noteService.restoreNote(n.getId());

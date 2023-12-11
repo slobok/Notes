@@ -11,7 +11,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
 
-
 @Route(value = "",layout = MainLayout.class)
 public class NotesList extends VerticalLayout {
     protected NoteService noteService;
@@ -61,6 +60,8 @@ public class NotesList extends VerticalLayout {
         textArea.addFocusListener(e -> {
             notesTitle.setVisible(true);
         });
+
+
 
         Button createNote = new Button("Create note");
         createNote.addClickListener(click -> {

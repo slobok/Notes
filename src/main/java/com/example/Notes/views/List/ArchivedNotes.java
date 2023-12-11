@@ -18,6 +18,14 @@ public class ArchivedNotes extends TrashedNotes {
     }
 
     @Override
+    protected void addToConstructor(){
+             add(
+                     getSearchField(),
+                     getAllNotes()
+             );
+    }
+
+    @Override
     protected VerticalLayout getAllNotes()  {
         VerticalLayout notesList = new VerticalLayout();
         notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
