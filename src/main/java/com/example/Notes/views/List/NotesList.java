@@ -4,6 +4,7 @@ import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -36,7 +37,8 @@ public class NotesList extends VerticalLayout {
     protected Component getSearchField() {
         HorizontalLayout hl = new HorizontalLayout();
         hl.setWidthFull();
-        this.search.setPlaceholder("Type to search");
+        this.search.setPlaceholder("Search");
+        this.search.setPrefixComponent(new Icon("lumo","search"));
         search.addValueChangeListener(e -> {
             this.updatePage();
         });
@@ -94,7 +96,7 @@ public class NotesList extends VerticalLayout {
             notesTitle.setLabel("Title");
             notesTitle.getStyle().setMargin("0");
 
-            TextField notesText = new TextField();
+            TextArea notesText = new TextArea();
             notesText.setValue(n.getText());
             notesText.setLabel("Notes text");
             notesText.getStyle().setMargin("0");

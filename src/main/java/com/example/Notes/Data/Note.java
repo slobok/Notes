@@ -2,6 +2,8 @@ package com.example.Notes.Data;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Table
 @Entity
 public class Note {

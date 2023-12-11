@@ -5,6 +5,7 @@ import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
@@ -56,7 +57,7 @@ public class TrashedNotes extends NotesList  {
                 notesTitle.setLabel("Title");
                 notesTitle.getStyle().setMargin("0");
 
-                TextField notesText = new TextField();
+                TextArea notesText = new TextArea();
                 notesText.setValue(n.getText());
                 notesText.setLabel("Notes text");
                 notesText.getStyle().setMargin("0");
