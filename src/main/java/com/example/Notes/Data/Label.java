@@ -1,9 +1,8 @@
 package com.example.Notes.Data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 public class Label {
@@ -13,11 +12,25 @@ public class Label {
     private String name;
     private Long userId;
 
+    @ManyToMany
+    @JoinTable(
+            name = "note_Label",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id"))
+
+    Set<Note> labeledNotes;
+
+    public Set<Note> getLabeledNote() {
+        return labeledNotes;
+    }
+
+    public void setLabeledNote(Set<Note> labeledNote) {
+        this.labeledNotes = labeledNote;
+    }
+
     public Label(){};
-    public Label(Long id, String name, Long userId) {
-        this.id = id;
+    public Label(String name) {
         this.name = name;
-        this.userId = userId;
     }
 
     public Long getId() {
@@ -36,13 +49,27 @@ public class Label {
         this.name = name;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Set<Note> getLabeledNotes() {
+        return labeledNotes;
+    }
+
+    public void setLabeledNotes(Set<Note> labeledNotes) {
+        this.labeledNotes = labeledNotes;
+    }
 
     @Override
     public String toString() {
         return "Label{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", userId=" + userId +
                 '}';
     }
 }

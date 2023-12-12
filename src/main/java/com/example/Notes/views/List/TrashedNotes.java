@@ -2,7 +2,6 @@ package com.example.Notes.views.List;
 
 import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,7 +38,6 @@ public class TrashedNotes extends NotesList  {
         return emptyTrashButton;
     }
 
-
     @Override
     protected VerticalLayout getAllNotes()  {
     VerticalLayout notesList = new VerticalLayout();
@@ -51,7 +49,6 @@ public class TrashedNotes extends NotesList  {
 
                 note.setWidth("30%");
                 note.setMargin(true);
-                note.getStyle().setBorder("1px solid black");
 
                 TextField notesTitle = new TextField();
                 notesTitle.setValue(n.getTitle());
@@ -70,18 +67,6 @@ public class TrashedNotes extends NotesList  {
                     this.updatePage();
                 });
 
-                Button updateChanges = new Button("Save");
-                updateChanges.addClickListener(click -> {
-                    Note noteToUpdate = new Note();
-                    noteToUpdate.setId(n.getId());
-                    noteToUpdate.setTitle(notesTitle.getValue());
-                    noteToUpdate.setText(notesText.getValue());
-                    noteToUpdate.setCreatedByUser(n.getCreatedByUser());
-                    noteToUpdate.setIsArchived(n.getIsArchived());
-                    noteToUpdate.setIsTrashed(n.getIsTrashed());
-                    this.noteService.saveNote(noteToUpdate);
-                    this.updatePage();
-                });
 
                 Button restore = new Button("Restore");
                 restore.addClickListener(klik -> {
@@ -89,7 +74,7 @@ public class TrashedNotes extends NotesList  {
                     this.updatePage();
                 });
                 HorizontalLayout noteMenu = new HorizontalLayout();
-                noteMenu.add(deleteButton, updateChanges, restore);
+                noteMenu.add(deleteButton, restore);
                 note.add(notesTitle, notesText, noteMenu);
                 notesList.add(note);
             }

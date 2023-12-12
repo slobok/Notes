@@ -2,7 +2,7 @@ package com.example.Notes.Data;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 public class Note {
@@ -13,15 +13,20 @@ public class Note {
     private String text;
     private int isTrashed;
     private int isArchived;
-
+    private boolean isCheckBoxForm;
+    private String textCheckBoxIndex;
+    private boolean pinned;
     private Long createdByUser;
+
+    @ManyToMany(mappedBy = "labeledNotes")
+    Set < Label > label;
 
     public Note(){}
     public Note(String title, String text, Long createdByUser) {
         this.title = title;
         this.text = text;
         this.createdByUser = createdByUser;
-
+        setPinned(false);
     }
 
     public Long getId() {
@@ -70,6 +75,33 @@ public class Note {
 
     public void setIsArchived(int isArchived) {
         this.isArchived = isArchived;
+    }
+
+    public boolean isCheckBoxForm() {
+        return isCheckBoxForm;
+    }
+
+    public void setCheckBoxForm(boolean checkBoxForm) {
+        isCheckBoxForm = checkBoxForm;
+    }
+
+    public String getTextCheckBoxIndex() {
+        return textCheckBoxIndex;
+    }
+
+    public void setTextCheckBoxIndex(String textCheckBoxIndex) {
+        this.textCheckBoxIndex = textCheckBoxIndex;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+    public void changePinned(){
+        this.pinned = !this.pinned;
     }
 
     @Override

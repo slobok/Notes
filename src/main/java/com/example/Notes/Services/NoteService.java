@@ -99,4 +99,22 @@ public class NoteService {
                 .orElseThrow(() ->  new IllegalStateException("Note with id: " + id + " not found"));
         note.setIsArchived(0);
     }
+
+    public void setIsInChechBoxSyle(Note n) {
+    }
+
+    @Transactional
+    public void changeIsPinned(Long id){
+        Note note =  this.noteRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Not found note"));
+        note.changePinned();
+    }
+    @Transactional
+    public void unpinNote(Long id){
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Note with id"  + id +  "not found"));
+        note.setPinned(false);
+    }
+
+
 }

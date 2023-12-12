@@ -1,6 +1,5 @@
 package com.example.Notes.views.List;
 
-
 import com.example.Notes.Data.Note;
 import com.example.Notes.Services.NoteService;
 import com.vaadin.flow.component.button.Button;
@@ -13,7 +12,6 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "archive",layout = MainLayout.class)
 public class ArchivedNotes extends TrashedNotes {
-
 
     ArchivedNotes(NoteService noteService) {
         super(noteService);
@@ -38,7 +36,6 @@ public class ArchivedNotes extends TrashedNotes {
 
                     note.setWidth("30%");
                     note.setMargin(true);
-                    note.getStyle().setBorder("1px solid black");
 
                     TextField notesTitle = new TextField();
                     notesTitle.setValue(n.getTitle());
@@ -49,7 +46,6 @@ public class ArchivedNotes extends TrashedNotes {
                     notesText.setValue(n.getText());
                     notesText.setLabel("Notes text");
                     notesText.getStyle().setMargin("0");
-
 
                     Button deleteButton = new Button("Move to trash");
                     deleteButton.addClickListener(click -> {

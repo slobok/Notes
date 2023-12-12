@@ -3,6 +3,9 @@ package com.example.Notes.Data;
 
 import jakarta.persistence.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Table
 @Entity
 public class User  {
@@ -11,7 +14,6 @@ public class User  {
     private Long Id;
     private String firstName;
     private String lastName;
-
     private String email;
 
     public User(){}
