@@ -85,7 +85,7 @@ public class NotesList extends VerticalLayout {
               textArea.setValue("");
               this.updatePage();
         });
-        newNote.add(notesTitle, textArea, noteMenu, createNote);
+        newNote.add(notesTitle, textArea, createNote);
         return newNote;
     }
 
@@ -106,7 +106,7 @@ public class NotesList extends VerticalLayout {
             //Note
             VerticalLayout note = new VerticalLayout();
             note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-            note.getStyle().setBoxShadow("2px 2px 4px linen");
+            note.getStyle().setBoxShadow("2px 2px 4px 4px linen");
 
             note.setWidth("30%");
             note.setMargin(true);
@@ -135,7 +135,8 @@ public class NotesList extends VerticalLayout {
                 checkbox.getStyle().setPadding("0px");
                 checkbox.getStyle().setMargin("0px");
 
-               // TextField addToCheckBox = new TextField();
+
+                // TextField addToCheckBox = new TextField();
               //  addToCheckBox.getStyle().setMargin("0");
               //  addToCheckBox.getStyle().setPadding("0px");
              //   addToCheckBox.setHelperText("add to notes");
