@@ -1,7 +1,7 @@
 package com.example.Notes.views.List;
 
 import com.example.Notes.Services.LabelService;
-import com.example.Notes.Services.NoteService;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -13,19 +13,27 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.HighlightConditions;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.router.RouterLink;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class MainLayout extends AppLayout {
 
-    private final LabelService labelService;
 
+    private Component labelsList;
+
+    private final LabelService labelService;
     MainLayout(LabelService labelService){
         this.labelService = labelService;
         getHeader();
         createDrawer();
+        this.updateDrawerLabelList();
     }
 
+    private void updateDrawerLabelList(){
+        this.remove(labelsList);
+        this.labelsList = displayLabels();
+        addToDrawer(labelsList);
+    }
     private void getHeader() {
         // Making title
         H1 h1 = new H1("Notes");
@@ -61,14 +69,32 @@ public class MainLayout extends AppLayout {
         ));
     }
 
+
+    private Component displayLabels() {
+        VerticalLayout listLabels = new VerticalLayout();
+        this.labelService.getAllLabels().forEach(label -> {
+            RouterLink link  = new RouterLink(label.getName(), LabeledNotes.class,
+                    new RouteParameters("label",label.getName()));
+            listLabels.add(link);
+        });
+
+        return listLabels;
+
+    }
+
+
+    // Prikaz DialogBox-a kada se klikne na dugme edit labels.
+    // Kroz dialbox omogućeno dodavanje labela.
     private Button editLabels(){
         Button editLabels = new Button("Edit labels");
 
         Dialog dialogLabels = new Dialog();
-        dialogLabels.setHeaderTitle("Edit labels");
+        dialogLabels.setHeaderTitle("Edit labels:");
 
-        editLabels.addClickListener(e  ->
-                dialogLabels.open());
+        editLabels.addClickListener(e  -> {
+            dialogLabels.open();
+                }
+        );
 
         VerticalLayout labelList = new VerticalLayout();
 
@@ -76,7 +102,7 @@ public class MainLayout extends AppLayout {
         addNewLabel.getStyle().setBorder("1px solid black");
         addNewLabel.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.START);
 
-        Button addLabelButton = new Button(new Icon("add"));
+        Button addLabelButton = new Button(new Icon("plus"));
         addLabelButton.setTooltipText("Click to add label");
 
         TextField newLabel = new TextField();
@@ -84,9 +110,11 @@ public class MainLayout extends AppLayout {
 
         addLabelButton.addClickListener(e -> {
             labelService.addLabel(newLabel.getValue());
+
             newLabel.setValue("");
             labelList.removeAll();
             labelList.add(addNewLabel, getAllLabels());
+            this.updateDrawerLabelList();
         });
         addNewLabel.add(newLabel, addLabelButton);
         labelList.add(addNewLabel, getAllLabels());
@@ -95,7 +123,7 @@ public class MainLayout extends AppLayout {
 
         return  editLabels;
     }
-
+    // Funkcija koja prikazije sve labele U vertiacal layout formi(jedna ispod druge).
     private VerticalLayout getAllLabels(){
         VerticalLayout labelsList = new VerticalLayout();
         this.labelService.getAllLabels().forEach(label -> {
@@ -105,5 +133,4 @@ public class MainLayout extends AppLayout {
         });
         return labelsList;
     }
-
 }

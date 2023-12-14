@@ -6,8 +6,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -100,10 +103,10 @@ public class NotesList extends VerticalLayout {
         notesList.add(new H6("Other notes:"));
 
         this.noteService.getAllNotes(this.search.getValue()).forEach(n -> {
-
+            //Note
             VerticalLayout note = new VerticalLayout();
             note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-            note.getStyle().setBoxShadow("2px 2px 5px linen");
+            note.getStyle().setBoxShadow("2px 2px 4px linen");
 
             note.setWidth("30%");
             note.setMargin(true);
@@ -184,11 +187,17 @@ public class NotesList extends VerticalLayout {
                 //this.noteService.setIsInChechBoxSyle(n);
             });
 
+            MenuBar menuBar = new MenuBar();
+            MenuItem moreItem = menuBar.addItem(new Icon("ellipsis-v"));
+            SubMenu moreItemSubMenu = moreItem.getSubMenu();
+            moreItemSubMenu.addItem("To trash");
 
+            //More icon kao i u google notes
+            Button more = new Button(new Icon("ellipsis-v"));
 
             HorizontalLayout noteMenu = new HorizontalLayout();
             noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-            noteMenu.add(deleteButton, updateChanges, archiveButton, showHideCheckBoxes);
+            noteMenu.add(deleteButton, updateChanges, archiveButton, showHideCheckBoxes,more,menuBar);
             note.add(pin,notesTitle, notesText, checkbox, noteMenu);
 
             if(n.isPinned()){

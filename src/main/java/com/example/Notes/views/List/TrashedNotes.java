@@ -60,13 +60,11 @@ public class TrashedNotes extends NotesList  {
                 notesText.setLabel("Notes text");
                 notesText.getStyle().setMargin("0");
 
-
                 Button deleteButton = new Button("Delete");
                 deleteButton.addClickListener(click -> {
                     this.noteService.deleteNote(n);
                     this.updatePage();
                 });
-
 
                 Button restore = new Button("Restore");
                 restore.addClickListener(klik -> {

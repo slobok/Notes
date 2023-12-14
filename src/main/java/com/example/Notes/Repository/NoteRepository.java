@@ -21,7 +21,4 @@ public interface NoteRepository extends JpaRepository <Note, Long > {
                       @Param("trash")int trash,
                       @Param("archive")int archive);
 
-
-
-
 }

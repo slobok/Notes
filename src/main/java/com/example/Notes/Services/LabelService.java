@@ -2,7 +2,6 @@ package com.example.Notes.Services;
 
 import com.example.Notes.Data.Label;
 import com.example.Notes.Repository.LabelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +22,7 @@ public class LabelService {
         if(labelName.isEmpty() || labelName == ""){
             throw new IllegalArgumentException("Label must contain name!!!");
         }
+
         this.labelRepository.save(new Label(labelName));
     }
 }
