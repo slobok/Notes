@@ -1,4 +1,4 @@
-package com.example.Notes.Data;
+package com.example.notes.data;
 
 import jakarta.persistence.*;
 
@@ -10,7 +10,10 @@ public class Note {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
     private String title;
+
+    @Column(columnDefinition = "LONGTEXT")
     private String text;
+
     private int isTrashed;
     private int isArchived;
     private boolean isCheckBoxForm;
@@ -19,7 +22,7 @@ public class Note {
     private Long createdByUser;
 
     @ManyToMany(mappedBy = "labeledNotes")
-    Set < Label > label;
+    Set<Label> label;
 
     public Note(){}
     public Note(String title, String text, Long createdByUser) {

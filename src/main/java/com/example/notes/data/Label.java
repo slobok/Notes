@@ -1,9 +1,10 @@
-package com.example.Notes.Data;
+package com.example.notes.data;
 
 import jakarta.persistence.*;
 
 import java.util.Set;
 
+@Table
 @Entity
 public class Label {
     @Id

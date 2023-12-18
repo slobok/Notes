@@ -1,7 +1,7 @@
-package com.example.Notes.Services;
+package com.example.notes.services;
 
-import com.example.Notes.Data.User;
-import com.example.Notes.Repository.UserRepository;
+import com.example.notes.data.User;
+import com.example.notes.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

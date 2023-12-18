@@ -1,29 +1,26 @@
-package com.example.Notes.views.List;
+package com.example.notes.views.list;
 
-import com.example.Notes.Services.NoteService;
-import com.vaadin.flow.component.Component;
+import com.example.notes.services.NoteService;
+import com.example.notes.views.list.components.note.CreatingNewNoteComponent;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "note/:label?", layout = MainLayout.class)
 public class LabeledNotes extends NotesList implements BeforeEnterObserver {
 
     public String labelName;
-
     LabeledNotes(NoteService noteService) {
         super(noteService);
        add(
             setHeaderWithParameter()
        );
-
     }
 
-
-
-    private Component setHeaderWithParameter() {
+    private VerticalLayout setHeaderWithParameter() {
         VerticalLayout vl = new VerticalLayout();
-        vl.add(new H1(this.labelName + "-test"));
+        vl.add(new H1(this.labelName + " - test"));
         return vl;
     }
 

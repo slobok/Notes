@@ -1,7 +1,9 @@
-package com.example.Notes.Services;
+package com.example.notes.services;
 
-import com.example.Notes.Data.Note;
-import com.example.Notes.Repository.NoteRepository;
+import com.example.notes.data.Note;
+import com.example.notes.repository.NoteRepository;
+import com.example.notes.exceptions.ErrorCode;
+import com.example.notes.exceptions.NotesAppException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +18,24 @@ public class NoteService {
         this.noteRepository = noteRepository;
     }
 
+    public Note findById(Long id){
+        return  this.noteRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Not found Note with id" + id));
+    }
+
     public List<Note> getAllNotes(String searchText) {
-        if (searchText.isEmpty() || searchText == null) {
-            return this.noteRepository.findByIsTrashedAndIsArchived(0,0);
+        if (searchText==null || searchText.isEmpty()) {
+            return this.noteRepository.findByIsTrashedAndIsArchived(0, 0);
         }
-        return this.noteRepository.search(searchText,  0,0);
+        return this.noteRepository.search(searchText, 0, 0);
     }
 
     public void saveNote(Note note) {
         try {
             this.noteRepository.save(note);
         } catch (Exception e) {
-            System.out.println(note);
-            throw new IllegalStateException("Nesto nije u redu");
+            throw new NotesAppException("Greska prilikom skladistenja biljeske", ErrorCode.SAVING_NOTE_ERROR)
+                    .set("note", note);
         }
 
     }
@@ -40,45 +47,33 @@ public class NoteService {
         this.noteRepository.delete(note);
     }
 
-   @Transactional
-    public void updateStateIsTrashed(Long id) throws Exception {
-        Optional<Note> optionalNote = this.noteRepository.findById(id);
-        if (optionalNote.isEmpty()) {
-            throw new IllegalStateException("Note does not exits");
-        } else {
-            optionalNote.get().setIsTrashed(1);
-        }
-    }
-
     @Transactional
-    public void updateStateIsArchived(Long id) {
-        Note note = this.noteRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Note with id " + "not founc"));
+    public void archiveNote(Long noteId) {
+        Note note = this.noteRepository.findById(noteId)
+                .orElseThrow(() -> new IllegalStateException("Note with id " +noteId+ "not found"));
         note.setIsArchived(1);
     }
 
     public List<Note> getAllTrashedNotes(String searchText) {
-        if(searchText.isEmpty() || searchText == null){
+        if (searchText == null || searchText.isEmpty()) { //TODO
             return this.noteRepository.findByIsTrashed(1);
-        }
-        else{
-           return this.noteRepository.search(searchText,1,0);
+        } else {
+            return this.noteRepository.search(searchText, 1, 0);
         }
     }
 
     @Transactional
-    public void moveToTrash(Note note){
+    public void moveToTrash(Note note) {
         Note n = this.noteRepository.findById(note.getId())
-                .orElseThrow(() ->  new IllegalStateException("Not found note"));
-     n.setIsTrashed(1);
-}
+                .orElseThrow(() -> new IllegalStateException("Not found note"));
+        n.setIsTrashed(1);
+    }
 
     public List<Note> getAllArchivedNotes(String searchText) {
-        if(searchText.isEmpty() || searchText == null){
-            return this.noteRepository.findByIsTrashedAndIsArchived(0,1);
-        }
-        else {
-            return this.noteRepository.search(searchText,0,1);
+        if (searchText.isEmpty() || searchText == null) { //TODO
+            return this.noteRepository.findByIsTrashedAndIsArchived(0, 1);
+        } else {
+            return this.noteRepository.search(searchText, 0, 1);
         }
     }
 
@@ -96,7 +91,7 @@ public class NoteService {
     @Transactional
     public void unarchiveNote(Long id) {
         Note note = this.noteRepository.findById(id)
-                .orElseThrow(() ->  new IllegalStateException("Note with id: " + id + " not found"));
+                .orElseThrow(() -> new IllegalStateException("Note with id: " + id + " not found"));
         note.setIsArchived(0);
     }
 
@@ -104,15 +99,16 @@ public class NoteService {
     }
 
     @Transactional
-    public void changeIsPinned(Long id){
-        Note note =  this.noteRepository.findById(id)
+    public void togglePin(Long id) {
+        Note note = this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Not found note"));
         note.changePinned();
     }
+
     @Transactional
-    public void unpinNote(Long id){
+    public void unpinNote(Long id) {
         Note note = noteRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Note with id"  + id +  "not found"));
+                .orElseThrow(() -> new IllegalStateException("Note with id" + id + "not found"));
         note.setPinned(false);
     }
 

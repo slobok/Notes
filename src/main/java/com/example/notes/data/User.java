@@ -1,17 +1,15 @@
-package com.example.Notes.Data;
+package com.example.notes.data;
 
 
 import jakarta.persistence.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Table
 @Entity
 public class User  {
+
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long Id;
+    private Long id;
+
     private String firstName;
     private String lastName;
     private String email;
@@ -24,11 +22,11 @@ public class User  {
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        id = id;
     }
 
     public String getFirstName() {

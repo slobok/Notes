@@ -1,6 +1,6 @@
-package com.example.Notes.Repository;
+package com.example.notes.repository;
 
-import com.example.Notes.Data.Label;
+import com.example.notes.data.Label;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

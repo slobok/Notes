@@ -1,7 +1,7 @@
-package com.example.Notes.Services;
+package com.example.notes.services;
 
-import com.example.Notes.Data.Label;
-import com.example.Notes.Repository.LabelRepository;
+import com.example.notes.data.Label;
+import com.example.notes.repository.LabelRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,16 +10,16 @@ import java.util.List;
 public class LabelService {
     private final LabelRepository labelRepository;
 
-    public LabelService(LabelRepository labelRepository){
-         this.labelRepository = labelRepository;
+    public LabelService(LabelRepository labelRepository) {
+        this.labelRepository = labelRepository;
     }
 
-    public List<Label> getAllLabels(){
+    public List<Label> getAllLabels() {
         return this.labelRepository.findAll();
     }
-    
-    public void addLabel(String labelName){
-        if(labelName.isEmpty() || labelName == ""){
+
+    public void addLabel(String labelName) {
+        if (labelName == null || labelName.isEmpty()) {
             throw new IllegalArgumentException("Label must contain name!!!");
         }
 

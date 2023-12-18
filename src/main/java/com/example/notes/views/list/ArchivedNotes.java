@@ -1,7 +1,7 @@
-package com.example.Notes.views.List;
+package com.example.notes.views.list;
 
-import com.example.Notes.Data.Note;
-import com.example.Notes.Services.NoteService;
+import com.example.notes.data.Note;
+import com.example.notes.services.NoteService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,16 +24,17 @@ public class ArchivedNotes extends TrashedNotes {
                      getAllNotes()
              );
     }
-
     @Override
     protected VerticalLayout getAllNotes()  {
         VerticalLayout notesList = new VerticalLayout();
         notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        this.noteService.getAllArchivedNotes(getSearch().getValue()).forEach(n -> {
+        String searchText = getSearch().getValue();
+        this.noteService.getAllArchivedNotes(searchText)
+                .forEach(n -> {
 
                     VerticalLayout note = new VerticalLayout();
                     note.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-
+                    note.getStyle().setBoxShadow("2px 2px 4px 4px linen");
                     note.setWidth("30%");
                     note.setMargin(true);
 
