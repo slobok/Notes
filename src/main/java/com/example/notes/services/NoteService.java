@@ -68,19 +68,11 @@ public class NoteService {
         note.setIsArchived(1);
     }
 
-
-
     @Transactional
     public void moveToTrash(Note note) {
         Note n = this.noteRepository.findById(note.getId())
                 .orElseThrow(() -> new IllegalStateException("Not found note"));
         n.setIsTrashed(1);
-    }
-
-
-
-    public void deleteAll() {
-        this.noteRepository.deleteAll(this.noteRepository.findByIsTrashed(1));
     }
 
     @Transactional
@@ -90,13 +82,16 @@ public class NoteService {
         note.setIsTrashed(0);
     }
 
+    public void deleteAll() {
+        this.noteRepository.deleteAll(this.noteRepository.findByIsTrashed(1));
+    }
+
     @Transactional
     public void unarchiveNote(Long id) {
         Note note = this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Note with id: " + id + " not found"));
         note.setIsArchived(0);
     }
-
 
     @Transactional
     public void togglePin(Long id) {
@@ -111,6 +106,4 @@ public class NoteService {
                 .orElseThrow(() -> new IllegalStateException("Note with id" + id + "not found"));
         note.setPinned(false);
     }
-
-
 }

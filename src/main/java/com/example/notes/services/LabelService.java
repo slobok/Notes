@@ -13,9 +13,11 @@ public class LabelService {
     public LabelService(LabelRepository labelRepository) {
         this.labelRepository = labelRepository;
     }
+
     public List<Label> getAllLabels() {
         return this.labelRepository.findAll();
     }
+
     public void addLabel(String labelName) {
         if (labelName == null || labelName.isEmpty()) {
             throw new IllegalArgumentException("Label must contain name!!!");

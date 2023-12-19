@@ -25,23 +25,15 @@ public class MainLayout extends AppLayout {
         this.labelService = labelService;
         createHeader();
         createDrawer();
-        this.updateDrawerLabelList();
     }
 
-    private void updateDrawerLabelList(){
-        this.remove(labelsList);
-        this.labelsList = displayLabels();
-        addToDrawer(labelsList);
-    }
     private void createHeader() {
         // Making title
         H1 headerTitle = createHeaderTitle();
         DrawerToggle drawerToggle = createDrawerToggle();
-        TextField search = createSearchNoteField();
-
         HorizontalLayout header = createHeaderLayout();
-        header.add(drawerToggle, headerTitle);
 
+        header.add(drawerToggle, headerTitle);
         addToNavbar(header);
     }
 
@@ -64,7 +56,7 @@ public class MainLayout extends AppLayout {
         header.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         return header;
     }
-
+    // Osposobiti naknadno search i ubaciti
     private static TextField createSearchNoteField() {
         TextField search = new TextField();
         search.setPlaceholder("Find note");
@@ -100,8 +92,5 @@ public class MainLayout extends AppLayout {
         });
         return listLabels;
     }
-
-    // Prikaz DialogBox-a kada se klikne na dugme edit labels.
-    // Kroz dialbox omogućeno dodavanje labela.
 
 }

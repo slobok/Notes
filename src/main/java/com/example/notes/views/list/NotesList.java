@@ -35,6 +35,7 @@ public class NotesList extends VerticalLayout {
         );
     }
 
+
     protected Component getSearchField() {
         HorizontalLayout hl = new HorizontalLayout();
         hl.setWidthFull();
