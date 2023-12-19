@@ -17,7 +17,7 @@ public class NoteInArchive extends NoteComponent{
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                super.toTrashButton(note),
+                super.toTrashButton(),
                 getUpdateChanges(),
                 new Button(new Icon("ellipsis-v")),
                 getUnarchivedButton()

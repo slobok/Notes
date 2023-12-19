@@ -26,16 +26,19 @@ public class NoteComponent extends VerticalLayout {
     private HorizontalLayout noteMenu;
     private VerticalLayout checkbox;
 
-    public NoteComponent(Note note,NoteService noteService){
-        this.note = note;
+    public NoteComponent(Note note, NoteService noteService){
         this.noteService = noteService;
+        this.note = note;
         stylingThisComponent();
-        this.noteHeader = createNoteHeader(notesTitle);
-        this.checkbox = createCheckBox();
-        this.notesText = createNotesText(note);
         this.noteMenu = createNoteMenu();
-
+        updateNote();
         this.add(noteHeader, notesText, checkbox, noteMenu);
+    }
+
+    private void updateNote() {
+        this.notesText = createNotesText();
+        this.checkbox = createCheckBox();
+        this.noteHeader = createNoteHeader();
     }
 
     //Methods of NoteComponents
@@ -43,47 +46,15 @@ public class NoteComponent extends VerticalLayout {
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                toTrashButton(note),
+                toTrashButton(),
                 getUpdateChanges(),
-                getArchiveButton(note)
+                getArchiveButton()
                 );
         return noteMenu;
     }
 
-    protected static MenuBar getMenuBar() {
-        MenuBar menuBar = new MenuBar();
-        MenuItem moreItem = menuBar.addItem(new Icon("ellipsis-v"));
-        SubMenu moreItemSubMenu = moreItem.getSubMenu();
-        moreItemSubMenu.addItem("To trash");
-        return menuBar;
-    }
-    private static Button getShowHideCheckBoxes() {
-        Button showHideCheckBoxes = new Button("Show checkboxes");
-        showHideCheckBoxes.setEnabled(false);
-        showHideCheckBoxes.addClickListener(click -> {
-            //this.noteService.setIsInChechBoxSyle(n);
-        });
-        return showHideCheckBoxes;
-    }
-    private Button getArchiveButton(Note note) {
-        Button archiveButton = new Button("Archive");
-        archiveButton.addClickListener(click -> {
-            toArchiveNote(note);
-            // this.updatePage();
-        });
-        return archiveButton;
-    }
 
-    protected Button toTrashButton(Note note) {
-        Button toTrashButton = new Button("Move to trash");
-        toTrashButton.addClickListener(click -> {
-            toTrash(note);
-            // this.updatePage();
-        });
-        return toTrashButton;
-    }
-
-    private  TextArea createNotesText(Note note) {
+    private  TextArea createNotesText() {
         TextArea notesText = new TextArea();
         notesText.setValue(note.getText());
         notesText.setLabel("Notes text");
@@ -92,7 +63,6 @@ public class NoteComponent extends VerticalLayout {
         notesText.setVisible(true);
         return notesText;
     }
-
     private VerticalLayout createCheckBox() {
         VerticalLayout checkbox = new VerticalLayout();
         checkbox.getStyle().setPadding("0px");
@@ -105,7 +75,7 @@ public class NoteComponent extends VerticalLayout {
         return checkbox;
     }
 
-    private HorizontalLayout createNoteHeader(TextField notesText) {
+    private HorizontalLayout createNoteHeader() {
         HorizontalLayout noteHeader =  new HorizontalLayout();
         noteHeader.getStyle().setMargin("0px 0px 0px 0px");
         noteHeader.getStyle().setPadding("0px 0px 0px 0px");
@@ -114,7 +84,7 @@ public class NoteComponent extends VerticalLayout {
         pin.getStyle().setFloat(Style.FloatCss.RIGHT);
 
         notesTitle = new TextField();
-        notesTitle.setValue(this.note.getTitle());
+        notesTitle.setValue(note.getTitle());
         notesTitle.getStyle().setMargin("0");
         notesTitle.getStyle().setPadding("0px");
         noteHeader.add(notesTitle, pin);
@@ -126,6 +96,16 @@ public class NoteComponent extends VerticalLayout {
         this.getStyle().setBoxShadow("1px 1px 3px linen");
         this.setWidth("30%");
         this.setMargin(true);
+    }
+
+    protected Button toTrashButton() {
+        Button toTrashButton = new Button(new Icon("trash"));
+        toTrashButton.setTooltipText("Move this note to trash");
+        toTrashButton.addClickListener(click -> {
+            toTrash();
+            // vjerovatno update
+        });
+        return toTrashButton;
     }
 
     private Button getPinButton() {
@@ -143,8 +123,19 @@ public class NoteComponent extends VerticalLayout {
         return pinButton;
     }
 
+    private Button getArchiveButton() {
+        Button archiveButton = new Button(new Icon("archive"));
+        archiveButton.setTooltipText("Archive note");
+        archiveButton.addClickListener(click -> {
+            toArchiveNote();
+            // this.updatePage();
+        });
+        return archiveButton;
+    }
+
     protected Button getUpdateChanges() {
         Button updateChangesButton = new Button("Save");
+        updateChangesButton.setTooltipText("Save note changes");
         updateChangesButton.addClickListener(click -> {
             updateNotesChanges();
           //  this.updatePage();
@@ -152,12 +143,12 @@ public class NoteComponent extends VerticalLayout {
         return updateChangesButton;
     }
 
-    private void toArchiveNote(Note note) {
+    private void toArchiveNote() {
         this.noteService.archiveNote(note.getId());
         this.noteService.unpinNote(note.getId());
     }
 
-    private void toTrash(Note note) {
+    private void toTrash() {
         this.noteService.moveToTrash(note);
         this.noteService.unpinNote(note.getId());
     }
@@ -167,8 +158,24 @@ public class NoteComponent extends VerticalLayout {
         note.setText(this.notesText.getValue());
         this.noteService.saveNote(note);
         this.note = this.noteService.findById(note.getId());
-
+        updateNote();
         this.removeAll();
-        this.add(createNoteHeader(notesTitle), createNotesText(note), createCheckBox(), createNoteMenu());
+        this.add(noteHeader, notesText, checkbox, noteMenu);
+    }
+
+    protected static MenuBar getMenuBar() {
+        MenuBar menuBar = new MenuBar();
+        MenuItem moreItem = menuBar.addItem(new Icon("ellipsis-v"));
+        SubMenu moreItemSubMenu = moreItem.getSubMenu();
+        moreItemSubMenu.addItem("To trash");
+        return menuBar;
+    }
+    private static Button getShowHideCheckBoxes() {
+        Button showHideCheckBoxes = new Button("Show checkboxes");
+        showHideCheckBoxes.setEnabled(false);
+        showHideCheckBoxes.addClickListener(click -> {
+            //this.noteService.setIsInChechBoxSyle(n);
+        });
+        return showHideCheckBoxes;
     }
 }

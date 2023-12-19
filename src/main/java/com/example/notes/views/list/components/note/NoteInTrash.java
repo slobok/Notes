@@ -12,13 +12,12 @@ public class NoteInTrash extends  NoteComponent{
         super(note, noteService);
     }
 
-
     @Override
     protected HorizontalLayout createNoteMenu() {
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                super.toTrashButton(note),
+                super.toTrashButton(),
                 getUpdateChanges(),
                 new Button(new Icon("ellipsis-v")),
                 getRestoreButton(),
@@ -44,5 +43,4 @@ public class NoteInTrash extends  NoteComponent{
         });
         return deleteButton;
     }
-
 }
