@@ -1,4 +1,4 @@
-package com.example.notes.views.list.components.note;
+package com.example.notes.views.list.components.note.header;
 
 import com.example.notes.data.Note;
 import com.example.notes.services.NoteService;
@@ -10,14 +10,15 @@ import com.vaadin.flow.dom.Style;
 
 
 public class NotesHeader extends HorizontalLayout {
-
-    public NotesHeader(TextField notesTitle, Note note, NoteService noteService){
-        add(notesTitle, getPinButton(note, noteService));
+    private final NoteService noteService;
+    public NotesHeader(Note note, NoteService noteService){
+        this.noteService = noteService;
+        add(new TextField(note.getTitle()), getPinButton(note));
     }
     private void stylingThisComponent(){
         // this.getStyle().set
     }
-    private Button getPinButton(Note note, NoteService noteService) {
+    private Button getPinButton(Note note) {
         Icon pinIcon = new Icon("pin");
         String pinIconColor = note.isPinned() ? "black" : "gray";
         pinIcon.setColor(pinIconColor);

@@ -1,11 +1,9 @@
 package com.example.notes.views.list;
 
 import com.example.notes.services.NoteService;
-import com.example.notes.views.list.components.note.CreatingNewNoteComponent;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "note/:label?", layout = MainLayout.class)
 public class LabeledNotes extends NotesList implements BeforeEnterObserver {

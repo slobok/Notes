@@ -95,7 +95,6 @@ public class NotesList extends VerticalLayout {
         notesContainer.getTitle().setVisible(false);
         NotesContainer pinnedNotes = new NotesContainer(new H6("Pinned"));
         pinnedNotes.setVisible(false);
-
         this.noteService.getAllNotes(this.search.getValue())
                 .forEach(n -> {
                     NoteComponent noteComponent = new NoteComponent(n, noteService);
@@ -117,7 +116,6 @@ public class NotesList extends VerticalLayout {
                 );
         return allNotes;
     }
-
     protected void updatePage() {
         this.removeAll();
         this.add(

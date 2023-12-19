@@ -8,7 +8,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NoteService {
@@ -24,10 +23,26 @@ public class NoteService {
     }
 
     public List<Note> getAllNotes(String searchText) {
-        if (searchText==null || searchText.isEmpty()) {
+        if (searchText == null || searchText.isEmpty()) {
             return this.noteRepository.findByIsTrashedAndIsArchived(0, 0);
         }
         return this.noteRepository.search(searchText, 0, 0);
+    }
+
+    public List<Note> getAllTrashedNotes(String searchText) {
+        if (searchText == null || searchText.isEmpty()) { //TODO
+            return this.noteRepository.findByIsTrashed(1);
+        } else {
+            return this.noteRepository.search(searchText, 1, 0);
+        }
+    }
+
+    public List<Note> getAllArchivedNotes(String searchText) {
+        if (searchText == null || searchText.isEmpty()) { //TODO
+            return this.noteRepository.findByIsTrashedAndIsArchived(0, 1);
+        } else {
+            return this.noteRepository.search(searchText, 0, 1);
+        }
     }
 
     public void saveNote(Note note) {
@@ -37,7 +52,6 @@ public class NoteService {
             throw new NotesAppException("Greska prilikom skladistenja biljeske", ErrorCode.SAVING_NOTE_ERROR)
                     .set("note", note);
         }
-
     }
 
     public void deleteNote(Note note) throws IllegalArgumentException {
@@ -50,17 +64,11 @@ public class NoteService {
     @Transactional
     public void archiveNote(Long noteId) {
         Note note = this.noteRepository.findById(noteId)
-                .orElseThrow(() -> new IllegalStateException("Note with id " +noteId+ "not found"));
+                .orElseThrow(() -> new IllegalStateException("Note with id " + noteId +  " not found !!!"));
         note.setIsArchived(1);
     }
 
-    public List<Note> getAllTrashedNotes(String searchText) {
-        if (searchText == null || searchText.isEmpty()) { //TODO
-            return this.noteRepository.findByIsTrashed(1);
-        } else {
-            return this.noteRepository.search(searchText, 1, 0);
-        }
-    }
+
 
     @Transactional
     public void moveToTrash(Note note) {
@@ -69,13 +77,7 @@ public class NoteService {
         n.setIsTrashed(1);
     }
 
-    public List<Note> getAllArchivedNotes(String searchText) {
-        if (searchText.isEmpty() || searchText == null) { //TODO
-            return this.noteRepository.findByIsTrashedAndIsArchived(0, 1);
-        } else {
-            return this.noteRepository.search(searchText, 0, 1);
-        }
-    }
+
 
     public void deleteAll() {
         this.noteRepository.deleteAll(this.noteRepository.findByIsTrashed(1));
@@ -95,8 +97,6 @@ public class NoteService {
         note.setIsArchived(0);
     }
 
-    public void setIsInChechBoxSyle(Note n) {
-    }
 
     @Transactional
     public void togglePin(Long id) {

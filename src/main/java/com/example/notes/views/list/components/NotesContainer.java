@@ -7,6 +7,7 @@ import com.vaadin.flow.dom.Style;
 public class NotesContainer extends VerticalLayout {
     private H6 title;
 
+    public NotesContainer(){}
     public NotesContainer(H6 title){
         this.title = title;
         stylizeThisComponent();
@@ -23,6 +24,4 @@ public class NotesContainer extends VerticalLayout {
     private void stylizeThisComponent(){
         this.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
     }
-
-
 }

@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteComponent extends VerticalLayout {
-    private Note note;
-    private final NoteService noteService;
+    protected Note note;
+    protected final NoteService noteService;
     private HorizontalLayout noteHeader;
     private TextField notesTitle;
     private TextArea notesText;
@@ -30,30 +30,27 @@ public class NoteComponent extends VerticalLayout {
         this.note = note;
         this.noteService = noteService;
         stylingThisComponent();
-        this.noteHeader = getNoteHeader(notesTitle);
-        checkbox = getCheckbox();
-        this.notesText = getNotesText(note);
-        noteMenu = getNoteMenu();
+        this.noteHeader = createNoteHeader(notesTitle);
+        this.checkbox = createCheckBox();
+        this.notesText = createNotesText(note);
+        this.noteMenu = createNoteMenu();
 
         this.add(noteHeader, notesText, checkbox, noteMenu);
     }
 
     //Methods of NoteComponents
-    private HorizontalLayout getNoteMenu() {
+    protected HorizontalLayout createNoteMenu() {
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                getDeleteButton(note),
+                toTrashButton(note),
                 getUpdateChanges(),
-                getArchiveButton(note),
-                getShowHideCheckBoxes(),
-                new Button(new Icon("ellipsis-v")),
-                getMenuBar()
+                getArchiveButton(note)
                 );
         return noteMenu;
     }
 
-    private static MenuBar getMenuBar() {
+    protected static MenuBar getMenuBar() {
         MenuBar menuBar = new MenuBar();
         MenuItem moreItem = menuBar.addItem(new Icon("ellipsis-v"));
         SubMenu moreItemSubMenu = moreItem.getSubMenu();
@@ -77,16 +74,16 @@ public class NoteComponent extends VerticalLayout {
         return archiveButton;
     }
 
-    private Button getDeleteButton(Note note) {
-        Button deleteButton = new Button("Move to trash");
-        deleteButton.addClickListener(click -> {
+    protected Button toTrashButton(Note note) {
+        Button toTrashButton = new Button("Move to trash");
+        toTrashButton.addClickListener(click -> {
             toTrash(note);
             // this.updatePage();
         });
-        return deleteButton;
+        return toTrashButton;
     }
 
-    private  TextArea getNotesText(Note note) {
+    private  TextArea createNotesText(Note note) {
         TextArea notesText = new TextArea();
         notesText.setValue(note.getText());
         notesText.setLabel("Notes text");
@@ -96,29 +93,22 @@ public class NoteComponent extends VerticalLayout {
         return notesText;
     }
 
-    private VerticalLayout getCheckbox() {
+    private VerticalLayout createCheckBox() {
         VerticalLayout checkbox = new VerticalLayout();
         checkbox.getStyle().setPadding("0px");
         checkbox.getStyle().setMargin("0px");
-
-        // TextField addToCheckBox = new TextField();
-        //  addToCheckBox.getStyle().setMargin("0");
-       //   addToCheckBox.getStyle().setPadding("0px");
-        //    addToCheckBox.setHelperText("add to notes");
         List<String> wordsList = new ArrayList<>(List.of(this.note.getText().split("\\n")));
         CheckboxGroup<String> checkboxGroup = new CheckboxGroup<>();
         checkboxGroup.setItems(wordsList);
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
-
         checkbox.add(checkboxGroup);
         return checkbox;
     }
 
-    private HorizontalLayout getNoteHeader(TextField notesText) {
+    private HorizontalLayout createNoteHeader(TextField notesText) {
         HorizontalLayout noteHeader =  new HorizontalLayout();
         noteHeader.getStyle().setMargin("0px 0px 0px 0px");
         noteHeader.getStyle().setPadding("0px 0px 0px 0px");
-        noteHeader.getStyle().setBorder("2px solid black");
         noteHeader.setVerticalComponentAlignment(Alignment.CENTER);
         Button pin = getPinButton();
         pin.getStyle().setFloat(Style.FloatCss.RIGHT);
@@ -153,7 +143,7 @@ public class NoteComponent extends VerticalLayout {
         return pinButton;
     }
 
-    private Button getUpdateChanges() {
+    protected Button getUpdateChanges() {
         Button updateChangesButton = new Button("Save");
         updateChangesButton.addClickListener(click -> {
             updateNotesChanges();
@@ -179,6 +169,6 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getId());
 
         this.removeAll();
-        this.add(getNoteHeader(notesTitle), getNotesText(note), getCheckbox(), getNoteMenu());
+        this.add(createNoteHeader(notesTitle), createNotesText(note), createCheckBox(), createNoteMenu());
     }
 }
