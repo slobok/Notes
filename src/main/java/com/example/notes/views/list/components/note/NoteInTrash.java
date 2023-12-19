@@ -4,6 +4,7 @@ import com.example.notes.data.Note;
 import com.example.notes.services.NoteService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.dom.Style;
 
@@ -17,9 +18,6 @@ public class NoteInTrash extends  NoteComponent{
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                super.toTrashButton(),
-                getUpdateChanges(),
-                new Button(new Icon("ellipsis-v")),
                 getRestoreButton(),
                 getDeleteButton()
         );
@@ -27,18 +25,23 @@ public class NoteInTrash extends  NoteComponent{
     }
 
     private Button getRestoreButton() {
-        Button restore = new Button("Restore");
+        Button restore = new Button(new Icon("arrows-long-up"));
+        restore.setTooltipText("Restore note");
         restore.addClickListener(klik -> {
             this.noteService.restoreNote(note.getId());
-          //  this.updatePage();
+            makeNotification("Note restored",1200, Notification.Position.BOTTOM_START);
+            this.removeFromParent();
         });
         return restore;
     }
 
     private Button getDeleteButton() {
-        Button deleteButton = new Button("Delete");
+        Button deleteButton = new Button(new Icon("close"));
+        deleteButton.setTooltipText("Delete note");
         deleteButton.addClickListener(click -> {
             this.noteService.deleteNote(note);
+            makeNotification("Note deleted",1200, Notification.Position.BOTTOM_START);
+            this.removeFromParent();
            // this.updatePage();
         });
         return deleteButton;

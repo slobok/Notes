@@ -9,11 +9,13 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.Style;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +48,9 @@ public class NoteComponent extends VerticalLayout {
         HorizontalLayout noteMenu = new HorizontalLayout();
         noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         noteMenu.add(
-                toTrashButton(),
-                getUpdateChanges(),
-                getArchiveButton()
+                saveChangesButton(),
+                getArchiveButton(),
+                toTrashButton()
                 );
         return noteMenu;
     }
@@ -100,10 +102,15 @@ public class NoteComponent extends VerticalLayout {
 
     protected Button toTrashButton() {
         Button toTrashButton = new Button(new Icon("trash"));
-        toTrashButton.setTooltipText("Move this note to trash");
+        toTrashButton.setTooltipText("Move to trash");
         toTrashButton.addClickListener(click -> {
             toTrash();
             // vjerovatno update
+            makeNotification(
+                    "Note moved to Trash",
+                    1000,
+                     Notification.Position.BOTTOM_START);
+            this.removeFromParent();
         });
         return toTrashButton;
     }
@@ -129,11 +136,17 @@ public class NoteComponent extends VerticalLayout {
         archiveButton.addClickListener(click -> {
             toArchiveNote();
             // this.updatePage();
+            makeNotification(
+                    "Note moved to archive",
+                    1000,
+                    Notification.Position.BOTTOM_START
+            );
+           this.removeFromParent();
         });
         return archiveButton;
     }
 
-    protected Button getUpdateChanges() {
+    protected Button saveChangesButton() {
         Button updateChangesButton = new Button("Save");
         updateChangesButton.setTooltipText("Save note changes");
         updateChangesButton.addClickListener(click -> {
@@ -178,4 +191,11 @@ public class NoteComponent extends VerticalLayout {
         });
         return showHideCheckBoxes;
     }
+
+    protected void makeNotification(String notificationText,int durationInMilliseconds,Notification.Position position ){
+        Notification notification =  Notification.show(notificationText);
+        notification.setDuration(durationInMilliseconds);
+        notification.setPosition(position);
+    }
+
 }
