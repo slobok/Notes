@@ -8,7 +8,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.Style;
 
-
 public class NotesHeader extends HorizontalLayout {
     private final NoteService noteService;
     public NotesHeader(Note note, NoteService noteService){

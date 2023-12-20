@@ -1,6 +1,7 @@
 package com.example.notes.services;
 
 import com.example.notes.data.Label;
+import com.example.notes.data.User;
 import com.example.notes.repository.LabelRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,10 @@ public class LabelService {
 
     public LabelService(LabelRepository labelRepository) {
         this.labelRepository = labelRepository;
+    }
+
+    public void saveLabel(Label label){
+        this.labelRepository.save(label);
     }
 
     public List<Label> getAllLabels() {

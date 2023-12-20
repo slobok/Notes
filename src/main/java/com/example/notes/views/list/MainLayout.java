@@ -3,17 +3,14 @@ package com.example.notes.views.list;
 import com.example.notes.services.LabelService;
 
 import com.example.notes.views.list.components.mainlayout.EditLabels;
+import com.example.notes.views.list.components.mainlayout.drawer.DrawerMenuIList;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.HighlightConditions;
-import com.vaadin.flow.router.RouteParameters;
-import com.vaadin.flow.router.RouterLink;
 
 public class MainLayout extends AppLayout {
 
@@ -66,29 +63,8 @@ public class MainLayout extends AppLayout {
 
     public void createDrawer(){
         addToDrawer(
-                fixedDrawerItems(),
-                //editLabels(),
+                new DrawerMenuIList(),
                 new EditLabels(labelService)
         );
-    }
-    // U metodi ispod --
-    // Ovo su stavke koje su fiksirane u draweru za razliku od liste labele koja je dinamična
-    private VerticalLayout fixedDrawerItems() {
-        RouterLink notesList = new RouterLink("Notes",NotesList.class);
-        notesList.setHighlightCondition(HighlightConditions.sameLocation());
-        RouterLink trashedNotes = new RouterLink("Trash", TrashedNotes.class);
-        RouterLink archivedNotes = new RouterLink("Archive",ArchivedNotes.class);
-        return new VerticalLayout(notesList, archivedNotes, trashedNotes);
-    }
-    // Slobodan: Todo make component for Router linkList
-
-    private VerticalLayout displayLabels() {
-        VerticalLayout listLabels = new VerticalLayout();
-        this.labelService.getAllLabels().forEach(label -> {
-            RouterLink link  = new RouterLink(label.getName(), LabeledNotes.class,
-                    new RouteParameters("label",label.getName()));
-            listLabels.add(link);
-        });
-        return listLabels;
     }
 }

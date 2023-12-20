@@ -1,5 +1,6 @@
 package com.example.notes.views.list.components.mainlayout;
 
+import com.example.notes.data.Label;
 import com.example.notes.services.LabelService;
 import com.example.notes.views.list.LabeledNotes;
 import com.vaadin.flow.component.button.Button;
@@ -24,11 +25,8 @@ public class EditLabels extends VerticalLayout {
         Button editLabels = new Button("Edit Labels");
         Dialog dialogLabels = getDialogLabels();
         editLabels.addClickListener(e -> dialogLabels.open());
+        add(editLabels);
         updateLabelsInDrawer();
-        add(
-                editLabels,
-                labelsInDrawer
-                );
     }
 
     private VerticalLayout getLabelsInDrawer() {
@@ -57,7 +55,6 @@ public class EditLabels extends VerticalLayout {
             labelList.add(addNewLabelRow, getAllLabels());
             //Zasto ovo radim?Volim da vidim kada dovucem iz baze sve da li je sve ok.
             updateLabelsInDrawer();
-            this.add(labelsInDrawer);
         });
         addNewLabelRow.add(newLabel, addLabelButton);
         labelList.add(addNewLabelRow, getAllLabels());
@@ -68,6 +65,7 @@ public class EditLabels extends VerticalLayout {
     private void updateLabelsInDrawer() {
         this.remove(labelsInDrawer);
         labelsInDrawer = getLabelsInDrawer();
+        this.add(labelsInDrawer);
     }
 
     private VerticalLayout getAllLabels(){
@@ -76,26 +74,27 @@ public class EditLabels extends VerticalLayout {
         //Label row ispod treba da sadrzi delete ikonicu za brisanje labele,
         //kao save dugme za cuvanje izmjena imena.
 
-
         this.labelService.getAllLabels().forEach(label -> {
             // Ime labele smještam u textfield
             HorizontalLayout labelRow = new HorizontalLayout();
-            labelRow.getStyle().setBorder("1px solid black");
             labelRow.getStyle().setPadding("0");
             labelRow.getStyle().setMargin("0 1%");
             TextField labelName = new TextField();
             labelName.setValue(label.getName());
             Button deleteButton  = new Button(new Icon("close-circle"));
-            Button saveLabelChange = new Button(new Icon());
             deleteButton.addClickListener(click -> {
                 this.labelService.deleteLabel(label);
                 labelRow.removeFromParent();
                 updateLabelsInDrawer();
-                this.add(labelsInDrawer);
             });
-
+            Button saveLabel = new Button(new Icon("check-circle-o"));
+            saveLabel.addClickListener(click ->{
+                label.setName(labelName.getValue());
+                this.labelService.saveLabel(label);
+                updateLabelsInDrawer();
+            });
                     // U svakom redu potrebni imati delete ikonicu, ime labele i trece dugme?
-            labelRow.add(deleteButton, labelName);
+            labelRow.add(deleteButton, labelName, saveLabel);
             labelsList.add(labelRow);
             // Potrebno staviti u jedan red x za brisanje labelee
 
