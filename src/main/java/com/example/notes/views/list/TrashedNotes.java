@@ -22,10 +22,11 @@ public class TrashedNotes extends NotesList  {
                     getAllNotes()
             );
     }
+
     private Button emptyTrashButton() {
         Button emptyTrashButton = new Button("Empty trash");
         emptyTrashButton.addClickListener(click -> {
-            this.noteService.deleteAll();
+            this.noteService.deleteAllInTrash();
             this.updatePage();
         });
         return emptyTrashButton;

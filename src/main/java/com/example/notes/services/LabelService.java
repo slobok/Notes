@@ -24,4 +24,9 @@ public class LabelService {
         }
         this.labelRepository.save(new Label(labelName));
     }
+
+    public void deleteLabel(Label label){
+        this.labelRepository.delete(label);;
+    }
+
 }

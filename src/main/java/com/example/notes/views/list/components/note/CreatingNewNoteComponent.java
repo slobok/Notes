@@ -9,7 +9,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 
-
 public class CreatingNewNoteComponent extends VerticalLayout {
     private TextField newNoteTitle;
     private TextArea  newNoteText;
@@ -82,5 +81,4 @@ public class CreatingNewNoteComponent extends VerticalLayout {
         this.newNoteText.setValue("");
         this.newNoteTitle.setValue("");
     }
-
 }

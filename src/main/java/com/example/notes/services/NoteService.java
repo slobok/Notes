@@ -82,7 +82,7 @@ public class NoteService {
         note.setIsTrashed(0);
     }
 
-    public void deleteAll() {
+    public void deleteAllInTrash() {
         this.noteRepository.deleteAll(this.noteRepository.findByIsTrashed(1));
     }
 

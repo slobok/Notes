@@ -15,7 +15,6 @@ import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.router.RouterLink;
 
-
 public class MainLayout extends AppLayout {
 
     private Component labelsList;
@@ -79,7 +78,7 @@ public class MainLayout extends AppLayout {
         notesList.setHighlightCondition(HighlightConditions.sameLocation());
         RouterLink trashedNotes = new RouterLink("Trash", TrashedNotes.class);
         RouterLink archivedNotes = new RouterLink("Archive",ArchivedNotes.class);
-        return new VerticalLayout(notesList, trashedNotes, archivedNotes);
+        return new VerticalLayout(notesList, archivedNotes, trashedNotes);
     }
     // Slobodan: Todo make component for Router linkList
 
@@ -92,5 +91,4 @@ public class MainLayout extends AppLayout {
         });
         return listLabels;
     }
-
 }

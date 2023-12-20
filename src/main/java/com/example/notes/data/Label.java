@@ -10,6 +10,8 @@ public class Label {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    //Ne moze da postoji label sa istim imenom za jednog korisnika
+    @Column(unique=true)
     private String name;
     private Long userId;
 

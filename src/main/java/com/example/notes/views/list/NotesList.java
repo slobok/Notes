@@ -6,6 +6,7 @@ import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.note.NoteComponent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -18,8 +19,10 @@ import com.vaadin.flow.router.Route;
 public class NotesList extends VerticalLayout {
     protected NoteService noteService;
     private TextField search = new TextField();
+    protected H3 message;
     NotesList(NoteService noteService) {
         this.noteService = noteService;
+        createMessage();
         addToConstructor();
     }
 
@@ -31,10 +34,17 @@ public class NotesList extends VerticalLayout {
         this.add(
                 getSearchField(),
                 createNoteField(),
-                getAllNotes()
+                getAllNotes(),
+                message
         );
     }
 
+    protected void createMessage(){
+        message = new H3("Notes appear hear");
+        message.setVisible(true);
+        message.getStyle().setColor("gray");
+        message.getStyle().setMargin("auto auto");
+        }
 
     protected Component getSearchField() {
         HorizontalLayout hl = new HorizontalLayout();
@@ -98,6 +108,11 @@ public class NotesList extends VerticalLayout {
         pinnedNotes.setVisible(false);
         this.noteService.getAllNotes(this.search.getValue())
                 .forEach(n -> {
+
+                    // Ako udjem u forEach petlju definitivno
+                    // ima notesa poruka(this.message) mora da se uklanja sa ekrana
+                    this.message.setVisible(false);
+
                     NoteComponent noteComponent = new NoteComponent(n, noteService);
                             // notes.add(NoteComponent);
                             //TODO https://vaadin.com/docs/latest/create-ui/creating-components

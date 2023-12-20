@@ -27,10 +27,8 @@ public class ArchivedNotes extends TrashedNotes {
         String searchText = getSearch().getValue();
         this.noteService.getAllArchivedNotes(searchText)
                 .forEach(n -> {
-                    notesList.add(new NoteInArchive(n,noteService));
-                }
-        );
+                    notesList.add(new NoteInArchive(n, noteService));
+                });
         return notesList;
     }
-
 }
