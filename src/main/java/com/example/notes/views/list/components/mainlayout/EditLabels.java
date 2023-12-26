@@ -1,6 +1,5 @@
 package com.example.notes.views.list.components.mainlayout;
 
-import com.example.notes.data.Label;
 import com.example.notes.services.LabelService;
 import com.example.notes.views.list.LabeledNotes;
 import com.vaadin.flow.component.button.Button;
@@ -81,23 +80,24 @@ public class EditLabels extends VerticalLayout {
             labelRow.getStyle().setMargin("0 1%");
             TextField labelName = new TextField();
             labelName.setValue(label.getName());
-            Button deleteButton  = new Button(new Icon("close-circle"));
-            deleteButton.addClickListener(click -> {
+            Button deleteLabelButtonInDialog  = new Button(new Icon("close-circle"));
+            deleteLabelButtonInDialog.setTooltipText("Delete label");
+            deleteLabelButtonInDialog.addClickListener(click -> {
                 this.labelService.deleteLabel(label);
                 labelRow.removeFromParent();
                 updateLabelsInDrawer();
             });
             Button saveLabel = new Button(new Icon("check-circle-o"));
+            saveLabel.setTooltipText("Sava name changes");
             saveLabel.addClickListener(click ->{
                 label.setName(labelName.getValue());
                 this.labelService.saveLabel(label);
                 updateLabelsInDrawer();
             });
                     // U svakom redu potrebni imati delete ikonicu, ime labele i trece dugme?
-            labelRow.add(deleteButton, labelName, saveLabel);
+            labelRow.add(deleteLabelButtonInDialog, labelName, saveLabel);
             labelsList.add(labelRow);
             // Potrebno staviti u jedan red x za brisanje labelee
-
 
         });
         return labelsList;

@@ -4,7 +4,11 @@ import com.example.notes.services.LabelService;
 
 import com.example.notes.views.list.components.mainlayout.EditLabels;
 import com.example.notes.views.list.components.mainlayout.drawer.DrawerMenuIList;
+import com.example.notes.views.list.events.SearchNoteEvent;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
@@ -28,8 +32,9 @@ public class MainLayout extends AppLayout {
         H1 headerTitle = createHeaderTitle();
         DrawerToggle drawerToggle = createDrawerToggle();
         HorizontalLayout header = createHeaderLayout();
+        TextField searchField = createSearchNoteField();
 
-        header.add(drawerToggle, headerTitle);
+        header.add(drawerToggle, headerTitle, searchField);
         addToNavbar(header);
     }
 
@@ -58,6 +63,12 @@ public class MainLayout extends AppLayout {
         search.setPlaceholder("Find note");
         search.getStyle().setMargin("auto 10%");
         search.setWidth("30%");
+        search.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TextField, String>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<TextField, String> event) {
+                ComponentUtil.fireEvent(search, new SearchNoteEvent(event.getSource(), event.getValue()));
+            }
+        });
         return search;
     }
 

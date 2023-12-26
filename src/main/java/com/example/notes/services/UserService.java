@@ -17,6 +17,4 @@ public class UserService {
     public List<User> getAllUsers(){
        return this.userRepository.findAll();
     }
-
-
 }

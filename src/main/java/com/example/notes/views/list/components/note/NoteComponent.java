@@ -1,10 +1,13 @@
 package com.example.notes.views.list.components.note;
 
+import com.example.notes.data.Label;
 import com.example.notes.data.Note;
+import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.icon.Icon;
@@ -16,30 +19,35 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.Style;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 public class NoteComponent extends VerticalLayout {
-    protected Note note;
+
     protected final NoteService noteService;
+    protected final LabelService labelService;
+    protected Note note;
     private HorizontalLayout noteHeader;
     private TextField notesTitle;
     private TextArea notesText;
     private HorizontalLayout noteMenu;
     private VerticalLayout checkbox;
+    private VerticalLayout multiSelectLComboBox;
 
-    public NoteComponent(Note note, NoteService noteService){
+    public NoteComponent(Note note, NoteService noteService, LabelService labelService){
         this.noteService = noteService;
+        this.labelService = labelService;
         this.note = note;
+        this.multiSelectLComboBox = makeLabelBox();
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
         updateNote();
-        this.add(noteHeader, notesText, checkbox, noteMenu);
+        this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu);
+
     }
 
     private void updateNote() {
         this.notesText = createNotesText();
-        this.checkbox = createCheckBox();
         this.noteHeader = createNoteHeader();
     }
 
@@ -55,14 +63,15 @@ public class NoteComponent extends VerticalLayout {
         return noteMenu;
     }
 
-
     private  TextArea createNotesText() {
         TextArea notesText = new TextArea();
         notesText.setValue(note.getText());
-        notesText.setLabel("Notes text");
         notesText.getStyle().setMargin("0");
         notesText.getStyle().setDisplay(Style.Display.BLOCK);
         notesText.setVisible(true);
+        notesText.getChildren().forEach(el -> {
+            el.getStyle().setBackground("linen");
+        });
         return notesText;
     }
     private VerticalLayout createCheckBox() {
@@ -89,15 +98,18 @@ public class NoteComponent extends VerticalLayout {
         notesTitle.setValue(note.getTitle());
         notesTitle.getStyle().setMargin("0");
         notesTitle.getStyle().setPadding("0px");
+        notesTitle.getStyle().setFont("88px");
         noteHeader.add(notesTitle, pin);
         return noteHeader;
     }
 
     private void stylingThisComponent() {
         this.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        this.getStyle().setBoxShadow("1px 1px 3px linen");
+        this.getStyle().setBoxShadow("2px 2px 2px 2px linen");
+        this.getStyle().set("border-radius","1rem");
         this.setWidth("30%");
         this.setMargin(true);
+        this.getStyle().setBackground("#FFFAF0");
     }
 
     protected Button toTrashButton() {
@@ -151,6 +163,7 @@ public class NoteComponent extends VerticalLayout {
         updateChangesButton.setTooltipText("Save note changes");
         updateChangesButton.addClickListener(click -> {
             updateNotesChanges();
+            makeNotification("Succesfully saved",1400, Notification.Position.MIDDLE);
           //  this.updatePage();
         });
         return updateChangesButton;
@@ -173,8 +186,36 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, checkbox, noteMenu);
+        this.add(noteHeader, notesText, multiSelectLComboBox, noteMenu);
     }
+    //Field for selecting labels
+    //Using component Vaadin Component MultiSelectLComboBox
+    private VerticalLayout makeLabelBox(){
+        MultiSelectComboBox<Label> labelMultiSelectComboBox = new MultiSelectComboBox<Label>("Labels");
+        labelMultiSelectComboBox.setItems(labelService.getAllLabels());
+        labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
+        labelMultiSelectComboBox.addSelectionListener(event -> {
+            //Sta je bolje? Uvijek sve labele šalji ka serveru ili samo izmjenu
+            //Mnogo toga može da se desi da se šalje
+            this.noteService.addLabelsToNote(note, event.getAddedSelection());
+                    System.out.println(event.getAddedSelection());
+
+            ArrayList <Label> newLabelsList =  new ArrayList<Label>(event.getValue().stream().toList());
+            Label addedLabel = newLabelsList.get(newLabelsList.size() - 1);
+            ArrayList <Label> oldLabelsList = new ArrayList<>(event.getOldValue().stream().toList());
+
+            if (event.getOldValue().size() < event.getValue().size()){
+               // this.noteService.addLabelToNote(note, addedLabel);
+            }
+            else {
+           //     this.noteService.removeLabelFromNote(note, addedLabel);
+            }
+        }
+
+        );
+        return new VerticalLayout(labelMultiSelectComboBox);
+    }
+
 
     protected static MenuBar getMenuBar() {
         MenuBar menuBar = new MenuBar();
@@ -183,6 +224,7 @@ public class NoteComponent extends VerticalLayout {
         moreItemSubMenu.addItem("To trash");
         return menuBar;
     }
+
     private static Button getShowHideCheckBoxes() {
         Button showHideCheckBoxes = new Button("Show checkboxes");
         showHideCheckBoxes.setEnabled(false);

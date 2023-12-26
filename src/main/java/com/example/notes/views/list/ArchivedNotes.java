@@ -1,5 +1,6 @@
 package com.example.notes.views.list;
 
+import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.note.NoteInArchive;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -9,12 +10,12 @@ import com.vaadin.flow.router.Route;
 @Route(value = "archive",layout = MainLayout.class)
 public class ArchivedNotes extends TrashedNotes {
 
-    ArchivedNotes(NoteService noteService) {
-        super(noteService);
+    ArchivedNotes(NoteService noteService, LabelService labelService) {
+        super(noteService, labelService);
     }
 
     @Override
-    protected void addToConstructor(){
+    protected void addToPage(){
              add(
                      getSearchField(),
                      getAllNotes()
@@ -27,7 +28,7 @@ public class ArchivedNotes extends TrashedNotes {
         String searchText = getSearch().getValue();
         this.noteService.getAllArchivedNotes(searchText)
                 .forEach(n -> {
-                    notesList.add(new NoteInArchive(n, noteService));
+                    notesList.add(new NoteInArchive(n, noteService, labelService));
                 });
         return notesList;
     }

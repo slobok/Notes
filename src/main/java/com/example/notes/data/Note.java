@@ -2,6 +2,7 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,7 +23,7 @@ public class Note {
     private Long createdByUser;
 
     @ManyToMany(mappedBy = "labeledNotes")
-    Set<Label> label;
+    Set<Label> label = new HashSet<>();
 
     public Note(){}
     public Note(String title, String text, Long createdByUser) {
@@ -105,6 +106,14 @@ public class Note {
     }
     public void changePinned(){
         this.pinned = !this.pinned;
+    }
+
+    public Set<Label> getLabel() {
+        return label;
+    }
+
+    public void setLabel(Set<Label> label) {
+        this.label = label;
     }
 
     @Override

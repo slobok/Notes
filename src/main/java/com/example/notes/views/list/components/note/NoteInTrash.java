@@ -1,16 +1,18 @@
 package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Note;
+import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.dom.Style;
 
 public class NoteInTrash extends  NoteComponent{
-    public NoteInTrash(Note note, NoteService noteService) {
-        super(note, noteService);
+    public NoteInTrash(Note note, NoteService noteService, LabelService labelService) {
+        super(note, noteService,labelService);
     }
 
     @Override

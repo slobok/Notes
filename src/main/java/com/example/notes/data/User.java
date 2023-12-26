@@ -25,9 +25,6 @@ public class User  {
         return id;
     }
 
-    public void setId(Long id) {
-        id = id;
-    }
 
     public String getFirstName() {
         return firstName;
