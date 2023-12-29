@@ -70,7 +70,7 @@ public class NoteComponent extends VerticalLayout {
         notesText.getStyle().setDisplay(Style.Display.BLOCK);
         notesText.setVisible(true);
         notesText.getChildren().forEach(el -> {
-            el.getStyle().setBackground("linen");
+            el.getStyle().setBackground("red");
         });
         return notesText;
     }
@@ -93,7 +93,6 @@ public class NoteComponent extends VerticalLayout {
         noteHeader.setVerticalComponentAlignment(Alignment.CENTER);
         Button pin = getPinButton();
         pin.getStyle().setFloat(Style.FloatCss.RIGHT);
-
         notesTitle = new TextField();
         notesTitle.setValue(note.getTitle());
         notesTitle.getStyle().setMargin("0");
@@ -107,9 +106,9 @@ public class NoteComponent extends VerticalLayout {
         this.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         this.getStyle().setBoxShadow("2px 2px 2px 2px linen");
         this.getStyle().set("border-radius","1rem");
-        this.setWidth("30%");
         this.setMargin(true);
         this.getStyle().setBackground("#FFFAF0");
+        this.setWidth("27rem");
     }
 
     protected Button toTrashButton() {

@@ -11,7 +11,7 @@ public class LabeledNotes extends NotesList implements BeforeEnterObserver {
 //
     public String labelName;
     LabeledNotes(NoteService noteService, LabelService labelService) {
-        super(noteService, labelService );
+        super(noteService, labelService);
        add(
             setHeaderWithParameter()
        );

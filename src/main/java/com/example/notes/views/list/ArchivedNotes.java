@@ -15,18 +15,17 @@ public class ArchivedNotes extends TrashedNotes {
     }
 
     @Override
-    protected void addToPage(){
+    protected void addComponentsToPage(){
              add(
-                     getSearchField(),
                      getAllNotes()
              );
     }
+
     @Override
     protected VerticalLayout getAllNotes()  {
         VerticalLayout notesList = new VerticalLayout();
         notesList.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-        String searchText = getSearch().getValue();
-        this.noteService.getAllArchivedNotes(searchText)
+        this.noteService.getAllArchivedNotes(getSearch().getValue())
                 .forEach(n -> {
                     notesList.add(new NoteInArchive(n, noteService, labelService));
                 });

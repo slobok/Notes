@@ -5,13 +5,11 @@ import com.example.notes.services.LabelService;
 import com.example.notes.views.list.components.mainlayout.EditLabels;
 import com.example.notes.views.list.components.mainlayout.drawer.DrawerMenuIList;
 import com.example.notes.views.list.events.SearchNoteEvent;
-import com.vaadin.flow.component.AbstractField;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,8 +19,9 @@ public class MainLayout extends AppLayout {
     private Component labelsList;
 
     private final LabelService labelService;
-    MainLayout(LabelService labelService){
+    MainLayout(LabelService labelService) {
         this.labelService = labelService;
+
         createHeader();
         createDrawer();
     }
@@ -33,7 +32,6 @@ public class MainLayout extends AppLayout {
         DrawerToggle drawerToggle = createDrawerToggle();
         HorizontalLayout header = createHeaderLayout();
         TextField searchField = createSearchNoteField();
-
         header.add(drawerToggle, headerTitle, searchField);
         addToNavbar(header);
     }
@@ -46,7 +44,7 @@ public class MainLayout extends AppLayout {
 
     private static H1 createHeaderTitle() {
         H1 h1 = new H1("Notes");
-         h1.getStyle().setBorder("1px solid black");
+       //  h1.getStyle().setBorder("1px solid black");
         return h1;
     }
 
@@ -58,17 +56,23 @@ public class MainLayout extends AppLayout {
         return header;
     }
     // Osposobiti naknadno search i ubaciti
-    private static TextField createSearchNoteField() {
+
+    private  TextField createSearchNoteField() {
         TextField search = new TextField();
+        search.setValue("");
+        search.setPrefixComponent(new Icon("lumo", "search"));
         search.setPlaceholder("Find note");
         search.getStyle().setMargin("auto 10%");
         search.setWidth("30%");
+
         search.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TextField, String>>() {
             @Override
             public void valueChanged(AbstractField.ComponentValueChangeEvent<TextField, String> event) {
-                ComponentUtil.fireEvent(search, new SearchNoteEvent(event.getSource(), event.getValue()));
+                // Fire an event on the event bus
+                ComponentUtil.fireEvent(UI.getCurrent() , new SearchNoteEvent(event.getSource(), false, event.getValue()));
             }
         });
+
         return search;
     }
 

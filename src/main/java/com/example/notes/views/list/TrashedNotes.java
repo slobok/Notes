@@ -14,12 +14,11 @@ public class TrashedNotes extends NotesList  {
     TrashedNotes(NoteService noteService, LabelService labelService)  {
         super(noteService,labelService);
     }
-    // TODO Ime ne valja
+    // TODO Izmijeni ime ispod
     @Override
-    protected void addToPage(){
+    protected void addComponentsToPage(){
             add(
                     emptyTrashButton(),
-                    getSearchField(),
                     getAllNotes()
             );
     }
@@ -49,7 +48,6 @@ public class TrashedNotes extends NotesList  {
     protected void updatePage(){
         this.removeAll();
         this.add(
-                this.getSearchField(),
                 this.getAllNotes()
         );
     }

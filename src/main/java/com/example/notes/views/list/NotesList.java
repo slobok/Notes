@@ -9,6 +9,7 @@ import com.example.notes.views.list.events.SearchNoteEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
@@ -22,7 +23,7 @@ import com.vaadin.flow.router.Route;
 import java.util.List;
 
 @Route(value = "", layout = MainLayout.class)
-public class NotesList extends VerticalLayout {
+public class NotesList extends VerticalLayout  {
     protected NoteService noteService;
     protected LabelService labelService;
     private TextField search = new TextField();
@@ -31,28 +32,25 @@ public class NotesList extends VerticalLayout {
         this.labelService = labelService;
         this.noteService = noteService;
         createMessage();
-        addToPage();
-        ComponentUtil.addListener(this, SearchNoteEvent.class, (ComponentEventListener<SearchNoteEvent>) event -> {
-            removeAll();
-            add(
-                    getSearchField(),
-                    createNoteForm(),
-                    doGetAllNotes(event.getSearchString())
-            );
+        addComponentsToPage();
+
+        // Register to events from the event bus
+        ComponentUtil.addListener(UI.getCurrent(), SearchNoteEvent.class, (ComponentEventListener<SearchNoteEvent>) event-> {
+            search.setValue(event.getSearchString());
+            updatePage();
         });
     }
 
-    public TextField getSearch() {
-        return search;
-    }
-
-    protected void addToPage() {
+    protected void addComponentsToPage() {
         this.add(
-                getSearchField(),
                 createNoteForm(),
                 getAllNotes(),
                 message
         );
+    }
+
+    public TextField getSearch() {
+        return search;
     }
 
     protected void createMessage(){
@@ -61,19 +59,6 @@ public class NotesList extends VerticalLayout {
         message.getStyle().setColor("gray");
         message.getStyle().setMargin("auto auto");
         }
-
-    protected Component getSearchField() {
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setWidthFull();
-        this.search.setPlaceholder("Search");
-        this.search.setPrefixComponent(new Icon("lumo", "search"));
-        search.addValueChangeListener(e -> {
-            this.updatePage();
-
-        });
-        hl.add(search);
-        return hl;
-    }
 
     private Component createNoteForm() {
         VerticalLayout newNote = new VerticalLayout();
@@ -129,43 +114,31 @@ public class NotesList extends VerticalLayout {
         pinnedNotesLayout.setVisible(false);
         List<Note> allNotes = this.noteService.getAllNotes(searchString);
         List<Note> pinnedNotes = allNotes.stream().filter(note -> note.isPinned()).toList();
-        List<Note> otherNotes = allNotes.stream().filter(note-> !note.isPinned()).toList();
+        List<Note> otherNotes = allNotes.stream().filter(note -> !note.isPinned()).toList();
 
+        pinnedNotes.forEach(note -> {
+            this.message.setVisible(false);
+            pinnedNotesLayout.setVisible(true);
+            pinnedNotesLayout.add(new NoteComponent(note, noteService, labelService));
+        });
 
+        otherNotes.forEach(note -> {
+            this.message.setVisible(false);
+            if(pinnedNotesLayout.isVisible()) notesContainer.getTitle().setVisible(true);
+            notesContainer.add(new NoteComponent(note, noteService, labelService));
+        });
 
-        allNotes
-                .forEach(n -> {
-                    // TODO nije dobro odvoj po strimovima one koje su pinovane
-                    // Ako udjem u forEach petlju definitivno
-                    // ima notesa poruka(this.message) mora da se uklanja sa ekrana
-                    this.message.setVisible(false);
-
-                    NoteComponent noteComponent = new NoteComponent(n, noteService, labelService);
-                            // notes.add(NoteComponent);
-                            //TODO https://vaadin.com/docs/latest/create-ui/creating-components
-
-                    if (n.isPinned()) {
-                        pinnedNotesLayout.setVisible(true);
-                        pinnedNotesLayout.add(noteComponent);
-                            }
-                    else {
-                        if(pinnedNotesLayout.isVisible()){
-                            notesContainer.getTitle().setVisible(true);
-                        }
-                        notesContainer.add(noteComponent);
-                        }
-
-                        }
-                );
         allNotesLayout.add(pinnedNotesLayout, notesContainer);
+
         return allNotesLayout;
     }
+
     protected void updatePage() {
         this.removeAll();
         this.add(
-                this.getSearchField(),
                 this.createNoteForm(),
                 this.getAllNotes()
         );
     }
+
 }
