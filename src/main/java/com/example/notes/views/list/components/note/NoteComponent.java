@@ -4,6 +4,7 @@ import com.example.notes.data.Label;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
+import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
@@ -119,7 +120,7 @@ public class NoteComponent extends VerticalLayout {
         toTrashButton.addClickListener(click -> {
             toTrash();
             // ispali event
-
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification(
                     "Note moved to Trash",
                     1000,
@@ -151,9 +152,11 @@ public class NoteComponent extends VerticalLayout {
         archiveButton.setTooltipText("Archive note");
         archiveButton.addClickListener(click -> {
             toArchiveNote();
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             // this.updatePage();
+            String message = note.isPinned() ? "Note archived and unpinned" : "Note archived";
             makeNotification(
-                    "Note moved to archive",
+                    message,
                     1000,
                     Notification.Position.BOTTOM_START
             );

@@ -3,6 +3,7 @@ package com.example.notes.views.list.components.note;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
+import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
@@ -54,6 +55,7 @@ public class NoteInArchive extends NoteComponent{
         unarchiveButton.setTooltipText("Unarchive note");
         unarchiveButton.addClickListener(klik -> {
             this.noteService.unarchiveNote(note.getId());
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification(
                     "Note unarchived",
                     1200,

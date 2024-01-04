@@ -23,8 +23,12 @@ public class DrawerMenuIList extends VerticalLayout {
     public DrawerMenuIList(NoteService noteService){
         this.noteService = noteService;
         setNumberOfNotes();
+       // Updating number of notes
         ComponentUtil.addListener(UI.getCurrent(), CountingNotesEvent.class, event -> {
-
+          System.out.println("touch");
+           setNumberOfNotes();
+           removeAll();
+           addToDrawer();
         });
       addToDrawer();
 

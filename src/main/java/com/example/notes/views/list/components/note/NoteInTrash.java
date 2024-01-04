@@ -3,6 +3,9 @@ package com.example.notes.views.list.components.note;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
+import com.example.notes.views.list.events.CountingNotesEvent;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
@@ -31,8 +34,10 @@ public class NoteInTrash extends  NoteComponent{
         restore.setTooltipText("Restore note");
         restore.addClickListener(klik -> {
             this.noteService.restoreNote(note.getId());
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification("Note restored",1200, Notification.Position.BOTTOM_START);
             this.removeFromParent();
+
         });
         return restore;
     }
@@ -42,6 +47,7 @@ public class NoteInTrash extends  NoteComponent{
         deleteButton.setTooltipText("Delete note");
         deleteButton.addClickListener(click -> {
             this.noteService.deleteNote(note);
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification("Note deleted",1200, Notification.Position.BOTTOM_START);
             this.removeFromParent();
            // this.updatePage();

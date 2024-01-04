@@ -5,6 +5,7 @@ import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.note.NoteComponent;
+import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
 import com.vaadin.flow.component.Component;
@@ -90,6 +91,8 @@ public class NotesList extends VerticalLayout  {
         Button createNote = new Button("Create note");
         createNote.addClickListener(click -> {
             createNewNote(notesTitle, textArea);
+            //Daj signal da je doslo do promjene u brojevima
+            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
         });
         newNote.add(notesTitle, textArea, createNote);
         return newNote;

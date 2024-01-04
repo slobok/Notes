@@ -16,4 +16,5 @@ public class CountingNotesEvent extends ComponentEvent<Component> {
         super(source, fromClient);
 
     }
+
 }
