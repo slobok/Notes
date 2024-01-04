@@ -5,6 +5,7 @@ import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.note.NoteComponent;
+import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -33,10 +34,13 @@ public class NotesList extends VerticalLayout  {
         this.noteService = noteService;
         createMessage();
         addComponentsToPage();
-
         // Register to events from the event bus
         ComponentUtil.addListener(UI.getCurrent(), SearchNoteEvent.class, (ComponentEventListener<SearchNoteEvent>) event-> {
             search.setValue(event.getSearchString());
+            updatePage();
+        });
+
+        ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class,(ComponentEventListener<PinNoteEvent>) event ->  {
             updatePage();
         });
     }
@@ -44,8 +48,8 @@ public class NotesList extends VerticalLayout  {
     protected void addComponentsToPage() {
         this.add(
                 createNoteForm(),
-                getAllNotes(),
-                message
+                getAllNotes()
+              //  message
         );
     }
 
@@ -96,6 +100,7 @@ public class NotesList extends VerticalLayout  {
         notesTitle.setValue("");
         textArea.setValue("");
         this.updatePage();
+
     }
 
     // Metoda koja dovlaci iz baze sve notese
@@ -140,5 +145,4 @@ public class NotesList extends VerticalLayout  {
                 this.getAllNotes()
         );
     }
-
 }

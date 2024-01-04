@@ -2,6 +2,7 @@ package com.example.notes.views.list;
 
 import com.example.notes.services.LabelService;
 
+import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.mainlayout.EditLabels;
 import com.example.notes.views.list.components.mainlayout.drawer.DrawerMenuIList;
 import com.example.notes.views.list.events.SearchNoteEvent;
@@ -17,10 +18,12 @@ import com.vaadin.flow.component.textfield.TextField;
 public class MainLayout extends AppLayout {
 
     private Component labelsList;
-
     private final LabelService labelService;
-    MainLayout(LabelService labelService) {
+    private final NoteService noteService;
+    MainLayout(LabelService labelService,
+               NoteService noteService) {
         this.labelService = labelService;
+        this.noteService = noteService;
 
         createHeader();
         createDrawer();
@@ -78,7 +81,7 @@ public class MainLayout extends AppLayout {
 
     public void createDrawer(){
         addToDrawer(
-                new DrawerMenuIList(),
+                new DrawerMenuIList(noteService),
                 new EditLabels(labelService)
         );
     }

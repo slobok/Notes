@@ -4,6 +4,9 @@ import com.example.notes.data.Label;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
+import com.example.notes.views.list.events.PinNoteEvent;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
@@ -43,7 +46,6 @@ public class NoteComponent extends VerticalLayout {
         this.noteMenu = createNoteMenu();
         updateNote();
         this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu);
-
     }
 
     private void updateNote() {
@@ -116,7 +118,8 @@ public class NoteComponent extends VerticalLayout {
         toTrashButton.setTooltipText("Move to trash");
         toTrashButton.addClickListener(click -> {
             toTrash();
-            // vjerovatno update
+            // ispali event
+
             makeNotification(
                     "Note moved to Trash",
                     1000,
@@ -136,7 +139,7 @@ public class NoteComponent extends VerticalLayout {
         pinButton.setTooltipText(tooltipText);
         pinButton.addClickListener(e -> {
             this.noteService.togglePin(this.note.getId());
-          //  this.updatePage();
+            ComponentUtil.fireEvent(UI.getCurrent(),new PinNoteEvent(pinButton,false));
         });
         return pinButton;
     }

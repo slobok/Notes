@@ -147,4 +147,18 @@ public class NoteService {
         note.setPinned(false);
     }
 
+    public long countAllNotes(){
+        return (int)noteRepository.count();
+    }
+
+    public long countNotesInTrash(){
+        return noteRepository.countByIsTrashed(1);
+    }
+    public long countNotesInArchive(){
+        return noteRepository.countByIsTrashedAndIsArchived(0,1);
+    }
+    public long countNotes(){
+        return noteRepository.countByIsTrashedAndIsArchived(0,0);
+    }
+
 }
