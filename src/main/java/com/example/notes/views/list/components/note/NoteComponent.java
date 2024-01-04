@@ -129,7 +129,7 @@ public class NoteComponent extends VerticalLayout {
         return toTrashButton;
     }
 
-    private Button getPinButton() {
+    protected Button getPinButton() {
         Icon pinIcon = new Icon("pin");
         String pinIconColor = this.note.isPinned() ? "black" : "gray";
         pinIcon.setColor(pinIconColor);
@@ -139,6 +139,8 @@ public class NoteComponent extends VerticalLayout {
         pinButton.setTooltipText(tooltipText);
         pinButton.addClickListener(e -> {
             this.noteService.togglePin(this.note.getId());
+            String message = this.note.isPinned() ? "Note unpinned" : "Note pinned";
+            makeNotification(message,1200, Notification.Position.BOTTOM_START);
             ComponentUtil.fireEvent(UI.getCurrent(),new PinNoteEvent(pinButton,false));
         });
         return pinButton;
