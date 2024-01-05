@@ -151,13 +151,13 @@ public class NoteService {
         return (int)noteRepository.count();
     }
 
-    public long countNotesInTrash(){
+    public int countNotesInTrash(){
         return noteRepository.countByIsTrashed(1);
     }
-    public long countNotesInArchive(){
+    public int countNotesInArchive(){
         return noteRepository.countByIsTrashedAndIsArchived(0,1);
     }
-    public long countNotes(){
+    public int countNotes(){
         return noteRepository.countByIsTrashedAndIsArchived(0,0);
     }
 

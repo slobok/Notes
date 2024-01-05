@@ -171,7 +171,6 @@ public class NoteComponent extends VerticalLayout {
         updateChangesButton.addClickListener(click -> {
             updateNotesChanges();
             makeNotification("Succesfully saved",1400, Notification.Position.MIDDLE);
-          //  this.updatePage();
         });
         return updateChangesButton;
     }

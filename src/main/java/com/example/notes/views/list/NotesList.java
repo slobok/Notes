@@ -49,8 +49,8 @@ public class NotesList extends VerticalLayout  {
     protected void addComponentsToPage() {
         this.add(
                 createNoteForm(),
-                getAllNotes()
-              //  message
+                getAllNotes(),
+                message
         );
     }
 
@@ -59,8 +59,8 @@ public class NotesList extends VerticalLayout  {
     }
 
     protected void createMessage(){
-        message = new H3("Notes appear hear");
-        message.setVisible(true);
+        message = new H3("Notes you add appear here");
+        message.setVisible(false);
         message.getStyle().setColor("gray");
         message.getStyle().setMargin("auto auto");
         }
@@ -121,17 +121,21 @@ public class NotesList extends VerticalLayout  {
         NotesContainer pinnedNotesLayout = new NotesContainer(new H6("Pinned"));
         pinnedNotesLayout.setVisible(false);
         List<Note> allNotes = this.noteService.getAllNotes(searchString);
+        // Ovaj dio ce biti lakše odraditi koristeći kontrolere
+        //Zašto? Zato jer tacno znam da li pogledu prosledjem prazu listu, pa kao argument mo
+
+        if(allNotes.isEmpty()){
+            message.setVisible(true);
+        }
         List<Note> pinnedNotes = allNotes.stream().filter(note -> note.isPinned()).toList();
         List<Note> otherNotes = allNotes.stream().filter(note -> !note.isPinned()).toList();
 
         pinnedNotes.forEach(note -> {
-            this.message.setVisible(false);
             pinnedNotesLayout.setVisible(true);
             pinnedNotesLayout.add(new NoteComponent(note, noteService, labelService));
         });
 
         otherNotes.forEach(note -> {
-            this.message.setVisible(false);
             if(pinnedNotesLayout.isVisible()) notesContainer.getTitle().setVisible(true);
             notesContainer.add(new NoteComponent(note, noteService, labelService));
         });

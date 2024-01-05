@@ -15,8 +15,8 @@ public interface NoteRepository extends JpaRepository<Note, Long > {
     List<Note> findByIsTrashed(int isTrashed);
     List<Note> findByIsArchived(int isArchived);
     List<Note> findByIsTrashedAndIsArchived(int isTrashed, int isArchived);
-    Long countByIsTrashed(int isTrashed);
-    Long countByIsTrashedAndIsArchived(int isTrashed, int isArchived);
+    int countByIsTrashed(int isTrashed);
+    int countByIsTrashedAndIsArchived(int isTrashed, int isArchived);
 
 
     @Query("SELECT n FROM Note n WHERE n.isTrashed = :trash AND n.isArchived = :archive AND (lower(n.title) like lower(concat('%', :searchTerm , '%'))" +
