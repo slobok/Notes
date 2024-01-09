@@ -23,6 +23,7 @@ public class NewNoteForm extends VerticalLayout {
         this.getStyle().setBoxShadow("1px 1px 2px linen");
 
         TextField notesTitle = new TextField();
+
         notesTitle.setPlaceholder("Title");
         notesTitle.setVisible(false);
         notesTitle.setWidth("30%");
@@ -41,11 +42,19 @@ public class NewNoteForm extends VerticalLayout {
         noteMenu.add(imageIcon);
 
         Button createNote = new Button("Create note");
+        createNote.setEnabled(false);
         createNote.addClickListener(click -> {
             createNewNote(notesTitle, textArea);
             //Daj signal da je doslo do promjene u brojevima
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
         });
+        notesTitle.addValueChangeListener(event -> {
+            createNote.setEnabled(!event.getValue().isBlank() || !textArea.getValue().isBlank());
+        });
+        textArea.addValueChangeListener(event -> {
+            createNote.setEnabled(!event.getValue().isBlank() || !notesTitle.getValue().isBlank());
+        });
+
         this.add(notesTitle, textArea, createNote);
     }
 
