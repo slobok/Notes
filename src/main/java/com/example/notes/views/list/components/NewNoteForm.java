@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 
 public class NewNoteForm extends VerticalLayout {
 
@@ -24,13 +25,22 @@ public class NewNoteForm extends VerticalLayout {
 
         TextField notesTitle = new TextField();
 
-        notesTitle.setPlaceholder("Title");
+        notesTitle.setPlaceholder("Note title");
         notesTitle.setVisible(false);
-        notesTitle.setWidth("30%");
+        //TODO podesi širinu vidi kao na google Keep.Vidi kako se mijenja širina,visina i šta se mijenja
+        String width = "40vw";
+        String minWidth = "315px";
+        notesTitle.setWidth(width);
+        notesTitle.setMinWidth(minWidth);
+        notesTitle.setValueChangeMode(ValueChangeMode.LAZY);
 
         TextArea textArea = new TextArea();
-        textArea.setPlaceholder("Type here");
-        textArea.setWidth("30%");
+        textArea.setPlaceholder("Type here:");
+        textArea.setWidth(width);
+        textArea.setMinWidth(minWidth);
+        textArea.setMaxHeight("75vh");
+        textArea.setValueChangeMode(ValueChangeMode.LAZY);
+        // TODO dodaj maximum height kao na google keep pogledaj
         textArea.addFocusListener(e -> {
             notesTitle.setVisible(true);
         });
@@ -41,21 +51,21 @@ public class NewNoteForm extends VerticalLayout {
         Icon imageIcon = new Icon("lumo", "photo");
         noteMenu.add(imageIcon);
 
-        Button createNote = new Button("Create note");
-        createNote.setEnabled(false);
-        createNote.addClickListener(click -> {
+        Button createNoteButton = new Button("Create note");
+        createNoteButton.setEnabled(false);
+        createNoteButton.addClickListener(click -> {
             createNewNote(notesTitle, textArea);
             //Daj signal da je doslo do promjene u brojevima
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
         });
         notesTitle.addValueChangeListener(event -> {
-            createNote.setEnabled(!event.getValue().isBlank() || !textArea.getValue().isBlank());
+            createNoteButton.setEnabled(!event.getValue().isBlank() || !textArea.getValue().isBlank());
         });
         textArea.addValueChangeListener(event -> {
-            createNote.setEnabled(!event.getValue().isBlank() || !notesTitle.getValue().isBlank());
+            createNoteButton.setEnabled(!event.getValue().isBlank() || !notesTitle.getValue().isBlank());
         });
 
-        this.add(notesTitle, textArea, createNote);
+        this.add(notesTitle, textArea, createNoteButton);
     }
 
     private void createNewNote(TextField notesTitle, TextArea textArea) {

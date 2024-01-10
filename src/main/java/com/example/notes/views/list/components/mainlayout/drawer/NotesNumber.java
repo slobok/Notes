@@ -5,7 +5,10 @@ import com.vaadin.flow.dom.Style;
 
 public class NotesNumber extends Span {
 
-    NotesNumber(String number){
+    public NotesNumber(){
+        stylizeThisComponent();
+    }
+    public NotesNumber(String number){
         this.setText(number);
         stylizeThisComponent();
     }

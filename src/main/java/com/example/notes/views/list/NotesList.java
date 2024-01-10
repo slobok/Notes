@@ -32,17 +32,27 @@ public class NotesList extends VerticalLayout  {
         this.newNoteForm = new NewNoteForm(noteService);
         createMessage();
         addComponentsToPage();
-        // Register to events from the event bus
-        ComponentUtil.addListener(UI.getCurrent(), SearchNoteEvent.class, (ComponentEventListener<SearchNoteEvent>) event-> {
-            search.setValue(event.getSearchString());
-            updatePage();
-        });
+        //Todo promijeni imena ovih listenera, dobro da ona kazuju šta se dešava a ne da ja kucam tekst
+        searchListener();
+        listenerForPinNoteEvent();
+        listenerToForAddingNewNote();
+    }
 
+    private void listenerForPinNoteEvent() {
         ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class,(ComponentEventListener<PinNoteEvent>) event ->  {
             updatePage();
         });
+    }
 
+    private void listenerToForAddingNewNote() {
         ComponentUtil.addListener(UI.getCurrent(), CountingNotesEvent.class,(ComponentEventListener<CountingNotesEvent>) event ->  {
+            updatePage();
+        });
+    }
+
+    private void searchListener() {
+        ComponentUtil.addListener(UI.getCurrent(), SearchNoteEvent.class, (ComponentEventListener<SearchNoteEvent>) event-> {
+            search.setValue(event.getSearchString());
             updatePage();
         });
     }
@@ -60,12 +70,11 @@ public class NotesList extends VerticalLayout  {
     }
 
     protected void createMessage(){
-        message = new H3("Notes you add appear here");
+        message = new H3("Notes you add appear here:");
         message.setVisible(false);
         message.getStyle().setColor("gray");
         message.getStyle().setMargin("auto auto");
         }
-
 
     // Metoda koja dovlaci iz baze sve notese
     protected VerticalLayout getAllNotes() {

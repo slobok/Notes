@@ -12,8 +12,8 @@ public class InputComponent extends Component {
         this(null,null);
     }
     public InputComponent(String value,String placeholder){
-         getElement().setProperty("value",value);
-         getElement().setProperty("placeholder",value);
+         getElement().setProperty("value", value);
+         getElement().setProperty("placeholder", value);
      }
 
      @Synchronize("change")
@@ -27,10 +27,10 @@ public class InputComponent extends Component {
      }
 
      public void setValue(String value){
-         getElement().setProperty("value",value);
+         getElement().setProperty("value", value);
      }
 
      public void setPlaceholder(String placeholder) {
-         getElement().setProperty("placeholder",placeholder);
+         getElement().setProperty("placeholder", placeholder);
      }
 }
