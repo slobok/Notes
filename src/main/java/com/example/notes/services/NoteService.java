@@ -161,4 +161,17 @@ public class NoteService {
         return noteRepository.countByIsTrashedAndIsArchived(0,0);
     }
 
+    public String getNotesColor(Long notesId){
+        Note note = this.noteRepository.findById(notesId)
+                .orElseThrow(() -> new IllegalStateException("Note with id " + notesId + " not found"));
+        return note.getNoteColor();
+    }
+
+    @Transactional
+    public void setNotesColor(String noteColor,Long notesId){
+        Note note = this.noteRepository.findById(notesId)
+                .orElseThrow(() -> new IllegalStateException("Note with id " + notesId + " not found"));
+        note.setNoteColor(noteColor);
+    }
+
 }

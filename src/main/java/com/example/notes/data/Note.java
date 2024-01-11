@@ -21,6 +21,8 @@ public class Note {
     private String textCheckBoxIndex;
     private boolean pinned;
     private Long createdByUser;
+    private String noteColor;
+
 
     @ManyToMany(mappedBy = "labeledNotes")
     Set<Label> label = new HashSet<>();
@@ -30,6 +32,7 @@ public class Note {
         this.title = title;
         this.text = text;
         this.createdByUser = createdByUser;
+        this.setNoteColor("#FFFAF0");
         setPinned(false);
     }
 
@@ -114,6 +117,13 @@ public class Note {
 
     public void setLabel(Set<Label> label) {
         this.label = label;
+    }
+    public String getNoteColor() {
+        return noteColor;
+    }
+
+    public void setNoteColor(String noteColor) {
+        this.noteColor = noteColor;
     }
 
     @Override

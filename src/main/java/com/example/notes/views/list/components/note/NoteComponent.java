@@ -14,6 +14,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
+import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 
 
@@ -37,7 +39,7 @@ public class NoteComponent extends VerticalLayout {
     private HorizontalLayout noteMenu;
     private VerticalLayout checkbox;
     private VerticalLayout multiSelectLComboBox;
-
+    private HorizontalLayout chooseColor;
     public NoteComponent(Note note, NoteService noteService, LabelService labelService){
         this.noteService = noteService;
         this.labelService = labelService;
@@ -45,8 +47,23 @@ public class NoteComponent extends VerticalLayout {
         this.multiSelectLComboBox = makeLabelBox();
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
+        this.chooseColor  = new HorizontalLayout(makeInput());
         updateNote();
-        this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu);
+        this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu, chooseColor);
+    }
+
+    private Input makeInput() {
+        Input makeInputColor = new Input();
+        makeInputColor.setType("color");
+        makeInputColor.setValue(note.getNoteColor());
+        makeInputColor.setValueChangeMode(ValueChangeMode.EAGER);
+        makeInputColor.getStyle().setCursor("pointer");
+        makeInputColor.addValueChangeListener(event -> {
+            this.getStyle().setBackground(event.getValue());
+            note.setNoteColor(event.getValue());
+            this.noteService.saveNote(note);
+        });
+        return  makeInputColor;
     }
 
     private void updateNote() {
@@ -72,9 +89,6 @@ public class NoteComponent extends VerticalLayout {
         notesText.getStyle().setMargin("0");
         notesText.getStyle().setDisplay(Style.Display.BLOCK);
         notesText.setVisible(true);
-        notesText.getChildren().forEach(el -> {
-            el.getStyle().setBackground("red");
-        });
         return notesText;
     }
     private VerticalLayout createCheckBox() {
@@ -110,8 +124,9 @@ public class NoteComponent extends VerticalLayout {
         this.getStyle().setBoxShadow("2px 2px 2px 2px linen");
         this.getStyle().set("border-radius","1rem");
         this.setMargin(true);
-        this.getStyle().setBackground("#FFFAF0");
-        this.setWidth("27rem");
+        this.setWidth("23rem");
+        this.setMinWidth("310px");
+        this.getStyle().setBackground(note.getNoteColor());
     }
 
     protected Button toTrashButton() {
@@ -120,7 +135,7 @@ public class NoteComponent extends VerticalLayout {
         toTrashButton.addClickListener(click -> {
             toTrash();
             // ispali event
-            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
+            ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
             makeNotification(
                     "Note moved to Trash",
                     1000,
@@ -142,7 +157,7 @@ public class NoteComponent extends VerticalLayout {
             this.noteService.togglePin(this.note.getId());
             String message = this.note.isPinned() ? "Note unpinned" : "Note pinned";
             makeNotification(message,1200, Notification.Position.BOTTOM_START);
-            ComponentUtil.fireEvent(UI.getCurrent(),new PinNoteEvent(pinButton,false));
+            ComponentUtil.fireEvent(UI.getCurrent(), new PinNoteEvent(pinButton,false));
         });
         return pinButton;
     }
@@ -152,7 +167,7 @@ public class NoteComponent extends VerticalLayout {
         archiveButton.setTooltipText("Archive note");
         archiveButton.addClickListener(click -> {
             toArchiveNote();
-            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
+            ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
             // this.updatePage();
             String message = note.isPinned() ? "Note archived and unpinned" : "Note archived";
             makeNotification(
@@ -192,7 +207,7 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, multiSelectLComboBox, noteMenu);
+        this.add(noteHeader, notesText, multiSelectLComboBox, noteMenu, chooseColor);
     }
     //Field for selecting labels
     //Using component Vaadin Component MultiSelectLComboBox
