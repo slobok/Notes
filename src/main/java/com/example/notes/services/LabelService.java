@@ -1,7 +1,6 @@
 package com.example.notes.services;
 
 import com.example.notes.data.Label;
-import com.example.notes.data.User;
 import com.example.notes.repository.LabelRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,9 @@ public class LabelService {
     public void addLabel(String labelName) {
         if (labelName == null || labelName.isEmpty()) {
             throw new IllegalArgumentException("Label must contain name!!!");
+        }
+        if(!this.labelRepository.findByName(labelName).isEmpty()){
+          throw  new IllegalArgumentException("Label with " + labelName + "already exist");
         }
         this.labelRepository.save(new Label(labelName));
     }

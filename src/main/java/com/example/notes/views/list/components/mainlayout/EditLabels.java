@@ -48,7 +48,6 @@ public class EditLabels extends VerticalLayout {
         TextField newLabel = new TextField();
         addLabelButton.addClickListener(e -> {
             labelService.addLabel(newLabel.getValue());
-
             newLabel.setValue("");
             labelList.removeAll();
             labelList.add(addNewLabelRow, getAllLabels());

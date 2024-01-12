@@ -5,7 +5,6 @@ import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.mainlayout.EditLabels;
 import com.example.notes.views.list.components.mainlayout.SideNavyPanel;
-import com.example.notes.views.list.components.mainlayout.drawer.DrawerMenuIList;
 import com.example.notes.views.list.events.SearchNoteEvent;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -77,8 +76,8 @@ public class MainLayout extends AppLayout {
     public void createDrawer(){
         addToDrawer(
               //  new DrawerMenuIList(noteService),
-                new SideNavyPanel(noteService),
-                new EditLabels(labelService)
+                new SideNavyPanel(noteService, labelService)
+              //  new EditLabels(labelService)
         );
     }
 }
