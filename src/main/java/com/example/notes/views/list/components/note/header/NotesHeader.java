@@ -26,7 +26,7 @@ public class NotesHeader extends HorizontalLayout {
         String tooltipText = note.isPinned() ? "Unpin" : "Pin";
         pinButton.setTooltipText(tooltipText);
         pinButton.addClickListener(e -> {
-            noteService.togglePin(note.getId());
+            noteService.togglePin(note.getNoteId());
             //  this.updatePage();
         });
         return pinButton;

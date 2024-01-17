@@ -8,13 +8,17 @@ import com.example.notes.views.list.components.note.NoteComponent;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 
 import java.util.List;
@@ -26,7 +30,7 @@ public class NotesList extends VerticalLayout  {
     private TextField search = new TextField();
     private final NewNoteForm newNoteForm;
     protected H3 message;
-    NotesList(NoteService noteService,LabelService labelService) {
+    NotesList(NoteService noteService, LabelService labelService) {
         this.labelService = labelService;
         this.noteService = noteService;
         this.newNoteForm = new NewNoteForm(noteService);
@@ -39,13 +43,13 @@ public class NotesList extends VerticalLayout  {
     }
 
     private void listenerForPinNoteEvent() {
-        ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class,(ComponentEventListener<PinNoteEvent>) event ->  {
+        ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class, (ComponentEventListener<PinNoteEvent>) event ->  {
             updatePage();
         });
     }
 
     private void listenerToForAddingNewNote() {
-        ComponentUtil.addListener(UI.getCurrent(), CountingNotesEvent.class,(ComponentEventListener<CountingNotesEvent>) event ->  {
+        ComponentUtil.addListener(UI.getCurrent(), CountingNotesEvent.class, (ComponentEventListener<CountingNotesEvent>) event ->  {
             updatePage();
         });
     }
@@ -87,18 +91,19 @@ public class NotesList extends VerticalLayout  {
         // Komponentu dvije grupe podijeljene pinned u unpinnded.
         // NotesContainer komponenta naparvljena u te svrhe
         NotesContainer notesContainer = new NotesContainer(new H6("Others"));
+
         notesContainer.getTitle().setVisible(false);
         NotesContainer pinnedNotesLayout = new NotesContainer(new H6("Pinned"));
         pinnedNotesLayout.setVisible(false);
         List<Note> allNotes = this.noteService.getAllNotes(searchString);
-        // Ovaj dio ce biti lakše odraditi koristeći kontrolere
-        //Zašto? Zato jer tacno znam da li pogledu prosledjem prazu listu, pa kao argument mo
 
         if(allNotes.isEmpty()){
             message.setVisible(true);
         }
         List<Note> pinnedNotes = allNotes.stream().filter(note -> note.isPinned()).toList();
         List<Note> otherNotes = allNotes.stream().filter(note -> !note.isPinned()).toList();
+
+
 
         pinnedNotes.forEach(note -> {
             pinnedNotesLayout.setVisible(true);

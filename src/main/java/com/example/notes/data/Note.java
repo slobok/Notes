@@ -2,14 +2,15 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Note {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Long id;
+    @Column(name = "note_id")
+    private Long noteId;
     private String title;
 
     @Column(columnDefinition = "LONGTEXT")
@@ -23,25 +24,24 @@ public class Note {
     private Long createdByUser;
     private String noteColor;
 
-
-    @ManyToMany(mappedBy = "labeledNotes")
-    Set<Label> label = new HashSet<>();
+    @ManyToMany(mappedBy = "labeledNotes",cascade = CascadeType.ALL)
+    private List<Label> label = new ArrayList<>();
 
     public Note(){}
-    public Note(String title, String text, Long createdByUser) {
+    public Note(String title, String text, Long createdByUser, String noteColor) {
         this.title = title;
         this.text = text;
         this.createdByUser = createdByUser;
-        this.setNoteColor("#FFFAF0");
+        this.setNoteColor(noteColor);
         setPinned(false);
     }
 
-    public Long getId() {
-        return id;
+    public Long getNoteId() {
+        return noteId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setNoteId(Long noteId) {
+        this.noteId = noteId;
     }
 
     public String getTitle() {
@@ -111,12 +111,12 @@ public class Note {
         this.pinned = !this.pinned;
     }
 
-    public Set<Label> getLabel() {
+    public List<Label> getLabel() {
         return label;
     }
 
-    public void setLabel(Set<Label> label) {
-        this.label = label;
+    public void setLabel(List<Label> label) {
+        this.label.addAll(label);
     }
     public String getNoteColor() {
         return noteColor;

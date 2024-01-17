@@ -38,7 +38,7 @@ public class NewNoteForm extends VerticalLayout {
         textArea.setPlaceholder("Type here:");
         textArea.setWidth(width);
         textArea.setMinWidth(minWidth);
-        textArea.setMaxHeight("75vh");
+        textArea.setMaxHeight("65vh");
         textArea.setValueChangeMode(ValueChangeMode.LAZY);
         // TODO dodaj maximum height kao na google keep pogledaj
         textArea.addFocusListener(e -> {
@@ -69,7 +69,8 @@ public class NewNoteForm extends VerticalLayout {
     }
 
     private void createNewNote(TextField notesTitle, TextArea textArea) {
-        this.noteService.saveNote(new Note(notesTitle.getValue(), textArea.getValue(), 1L));
+        String noteColor = "#FFFAF0";
+        this.noteService.saveNote(new Note(notesTitle.getValue(), textArea.getValue(), 1L, noteColor));
         notesTitle.setValue("");
         textArea.setValue("");
         ComponentUtil.fireEvent(UI.getCurrent(), new NoteCreatedEvent(this, false));

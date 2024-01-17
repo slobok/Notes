@@ -6,10 +6,17 @@ import com.example.notes.repository.LabelRepository;
 import com.example.notes.repository.NoteRepository;
 import com.example.notes.exceptions.ErrorCode;
 import com.example.notes.exceptions.NotesAppException;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -20,45 +27,66 @@ public class NoteService {
         this.noteRepository = noteRepository;
         this.labelRepository = labelRepository;
     }
-    // Add label to note service
 
-   //TODO popravi funkciju ispod
+    public List<Note> getAll() {
+        return this.noteRepository.findAll();
+    }
+
+    //TODO popravi funkciju ispod
     @Transactional
-    public void addLabelToNote(Note note,Label label){
-        Optional <Note> optionalNote = noteRepository.findById(note.getId());
-        if (optionalNote.isEmpty()){
-            throw new IllegalArgumentException("Not found note with id" + note.getId());
+    public void addLabelToNote(Note note, Label label) {
+        Optional<Note> optionalNote = noteRepository.findById(note.getNoteId());
+        if (optionalNote.isEmpty()) {
+            throw new IllegalArgumentException("Not found note with id" + note.getNoteId());
         }
-        Optional <Label> optionalLabel = labelRepository.findById(label.getId());
-        if(optionalLabel.isEmpty()){
-            throw new IllegalArgumentException("Not found label with id "  + label.getId());
+        Optional<Label> optionalLabel = labelRepository.findById(label.getLabelId());
+        if (optionalLabel.isEmpty()) {
+            throw new IllegalArgumentException("Not found label with id " + label.getLabelId());
         }
         optionalNote.get().getLabel().add(label);
     }
 
     @Transactional
-    public void addLabelsToNote(Note note, Set <Label> labelsSet){
-        Note note1 =  this.noteRepository.findById(note.getId()).
-                orElseThrow(() -> new IllegalArgumentException("Not found note with id " + note.getId()));
+    public void addLabelsToNote(Note note, List<Label> labelsSet) {
+        Note note1 = this.noteRepository.findById(note.getNoteId()).
+                orElseThrow(() -> new IllegalArgumentException("Not found note with id " + note.getNoteId()));
+
         note1.setLabel(labelsSet);
+        labelsSet.forEach(label -> {
+            Label l = this.labelRepository.findById(label.getLabelId())
+                    .orElseThrow(() -> new IllegalArgumentException("Not found label with id " + label.getLabelId()));
+            l.getLabeledNotes().add(note1);
+        });
+        this.noteRepository.save(note1);
     }
 
-    public void removeLabelFromNote(Note note, Label label){
-        Optional <Note> optionalNote = noteRepository.findById(note.getId());
-        if (optionalNote.isEmpty()){
-            throw new IllegalArgumentException("Not found note with id" + note.getId());
+    @Transactional
+    public void removeLabelSFromNote(Note note, List<Label> labelsToRemove) {
+        Note note1 = this.noteRepository.findById(note.getNoteId()).
+                orElseThrow(() -> new IllegalArgumentException("Not found note with id " + note.getNoteId()));
+        note1.getLabel().removeAll(labelsToRemove);
+        labelsToRemove.forEach(label -> {
+            Label label1 = this.labelRepository.findById(label.getLabelId())
+                    .orElseThrow(() -> new RuntimeException("Not found label with id " + label.getLabelId()));
+            label1.getLabeledNotes().remove(note1);
+        });
+        this.noteRepository.save(note1);
+    }
+
+    public void removeLabelFromNote(Note note, Label label) {
+        Optional<Note> optionalNote = noteRepository.findById(note.getNoteId());
+        if (optionalNote.isEmpty()) {
+            throw new IllegalArgumentException("Not found note with id" + note.getNoteId());
         }
-        Optional <Label> optionalLabel = labelRepository.findById(label.getId());
-        if(optionalLabel.isEmpty()){
-            throw new IllegalArgumentException("Not found label with id "  + label.getId());
+        Optional<Label> optionalLabel = labelRepository.findById(label.getLabelId());
+        if (optionalLabel.isEmpty()) {
+            throw new IllegalArgumentException("Not found label with id " + label.getLabelId());
         }
         optionalNote.get().getLabel().remove(label);
     }
 
-
-
-    public Note findById(Long id){
-        return  this.noteRepository.findById(id)
+    public Note findById(Long id) {
+        return this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Not found Note with id" + id));
     }
 
@@ -104,13 +132,13 @@ public class NoteService {
     @Transactional
     public void archiveNote(Long noteId) {
         Note note = this.noteRepository.findById(noteId)
-                .orElseThrow(() -> new IllegalStateException("Note with id " + noteId +  " not found !!!"));
+                .orElseThrow(() -> new IllegalStateException("Note with id " + noteId + " not found !!!"));
         note.setIsArchived(1);
     }
 
     @Transactional
     public void moveToTrash(Note note) {
-        Note n = this.noteRepository.findById(note.getId())
+        Note n = this.noteRepository.findById(note.getNoteId())
                 .orElseThrow(() -> new IllegalStateException("Not found note"));
         n.setIsTrashed(1);
     }
@@ -147,31 +175,42 @@ public class NoteService {
         note.setPinned(false);
     }
 
-    public long countAllNotes(){
-        return (int)noteRepository.count();
+    public long countAllNotes() {
+        return (int) noteRepository.count();
     }
 
-    public int countNotesInTrash(){
+    public int countNotesInTrash() {
         return noteRepository.countByIsTrashed(1);
     }
-    public int countNotesInArchive(){
-        return noteRepository.countByIsTrashedAndIsArchived(0,1);
-    }
-    public int countNotes(){
-        return noteRepository.countByIsTrashedAndIsArchived(0,0);
+
+    public int countNotesInArchive() {
+        return noteRepository.countByIsTrashedAndIsArchived(0, 1);
     }
 
-    public String getNotesColor(Long notesId){
+    public int countNotes() {
+        return noteRepository.countByIsTrashedAndIsArchived(0, 0);
+    }
+
+    public String getNotesColor(Long notesId) {
         Note note = this.noteRepository.findById(notesId)
                 .orElseThrow(() -> new IllegalStateException("Note with id " + notesId + " not found"));
         return note.getNoteColor();
     }
 
     @Transactional
-    public void setNotesColor(String noteColor,Long notesId){
+    public void setNotesColor(String noteColor, Long notesId) {
         Note note = this.noteRepository.findById(notesId)
                 .orElseThrow(() -> new IllegalStateException("Note with id " + notesId + " not found"));
         note.setNoteColor(noteColor);
     }
+
+    @Transactional
+    public List<Label> getNoteLabels(Long noteId) {
+        Note note = this.noteRepository.findById(noteId)
+                .orElseThrow(() -> new IllegalStateException("Note with id:" + noteId + "not found"));
+        return new ArrayList<>(note.getLabel());
+    }
+
+
 
 }

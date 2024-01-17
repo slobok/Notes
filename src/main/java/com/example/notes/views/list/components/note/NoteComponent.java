@@ -5,7 +5,10 @@ import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.events.CountingNotesEvent;
+import com.example.notes.views.list.events.LabelsUpdateEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -25,7 +28,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 
-
 import java.util.*;
 
 public class NoteComponent extends VerticalLayout {
@@ -37,8 +39,9 @@ public class NoteComponent extends VerticalLayout {
     private TextField notesTitle;
     private TextArea notesText;
     private HorizontalLayout noteMenu;
+    private List<Label> allLabels;
     private VerticalLayout checkbox;
-    private VerticalLayout multiSelectLComboBox;
+    private Component multiSelectLComboBox;
     private HorizontalLayout chooseColor;
     public NoteComponent(Note note, NoteService noteService, LabelService labelService){
         this.noteService = noteService;
@@ -47,23 +50,24 @@ public class NoteComponent extends VerticalLayout {
         this.multiSelectLComboBox = makeLabelBox();
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
-        this.chooseColor  = new HorizontalLayout(makeInput());
+        this.multiSelectLComboBox = makeLabelBox();
+        this.chooseColor  = new HorizontalLayout(changeNotesColor());
         updateNote();
         this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu, chooseColor);
     }
 
-    private Input makeInput() {
-        Input makeInputColor = new Input();
-        makeInputColor.setType("color");
-        makeInputColor.setValue(note.getNoteColor());
-        makeInputColor.setValueChangeMode(ValueChangeMode.EAGER);
-        makeInputColor.getStyle().setCursor("pointer");
-        makeInputColor.addValueChangeListener(event -> {
+    private Input changeNotesColor() {
+        Input chooseColor = new Input();
+        chooseColor.setType("color");
+        chooseColor.setValue(note.getNoteColor());
+        chooseColor.setValueChangeMode(ValueChangeMode.EAGER);
+        chooseColor.getStyle().setCursor("pointer");
+        chooseColor.addValueChangeListener(event -> {
             this.getStyle().setBackground(event.getValue());
             note.setNoteColor(event.getValue());
             this.noteService.saveNote(note);
         });
-        return  makeInputColor;
+        return  chooseColor;
     }
 
     private void updateNote() {
@@ -74,13 +78,17 @@ public class NoteComponent extends VerticalLayout {
     //Methods of NoteComponents
     protected HorizontalLayout createNoteMenu() {
         HorizontalLayout noteMenu = new HorizontalLayout();
-        noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
+        noteMenu.getStyle().setDisplay(Style.Display.BLOCK);
+        addButtonsToNoteMenu(noteMenu);
+        return noteMenu;
+    }
+
+    protected void addButtonsToNoteMenu(HorizontalLayout noteMenu) {
         noteMenu.add(
-                saveChangesButton(),
+               // saveChangesButton(),
                 getArchiveButton(),
                 toTrashButton()
                 );
-        return noteMenu;
     }
 
     private  TextArea createNotesText() {
@@ -89,6 +97,15 @@ public class NoteComponent extends VerticalLayout {
         notesText.getStyle().setMargin("0");
         notesText.getStyle().setDisplay(Style.Display.BLOCK);
         notesText.setVisible(true);
+
+        notesText.setValueChangeMode(ValueChangeMode.EAGER);
+        notesText.addValueChangeListener(event -> {
+            note.setText(notesText.getValue());
+            // TODO ne znam da li je ovaj save dobar mozda je bolje
+            // TODO novu funckiju servisu da pravim koja samo ažurira
+            // TODO tekst
+            this.noteService.saveNote(note);
+        });
         return notesText;
     }
     private VerticalLayout createCheckBox() {
@@ -105,16 +122,25 @@ public class NoteComponent extends VerticalLayout {
 
     private HorizontalLayout createNoteHeader() {
         HorizontalLayout noteHeader =  new HorizontalLayout();
+       // noteHeader.getStyle().setBorder("1px solid black");
         noteHeader.getStyle().setMargin("0px 0px 0px 0px");
         noteHeader.getStyle().setPadding("0px 0px 0px 0px");
         noteHeader.setVerticalComponentAlignment(Alignment.CENTER);
         Button pin = getPinButton();
-        pin.getStyle().setFloat(Style.FloatCss.RIGHT);
+        pin.getStyle().setMargin("0px 0px 0px auto");
         notesTitle = new TextField();
+        notesTitle.setMaxLength(50);
         notesTitle.setValue(note.getTitle());
         notesTitle.getStyle().setMargin("0");
         notesTitle.getStyle().setPadding("0px");
         notesTitle.getStyle().setFont("88px");
+
+        notesTitle.setValueChangeMode(ValueChangeMode.EAGER);
+        notesTitle.addValueChangeListener(event -> {
+            note.setTitle(notesTitle.getValue());
+            this.noteService.saveNote(note);
+        });
+
         noteHeader.add(notesTitle, pin);
         return noteHeader;
     }
@@ -127,6 +153,7 @@ public class NoteComponent extends VerticalLayout {
         this.setWidth("23rem");
         this.setMinWidth("310px");
         this.getStyle().setBackground(note.getNoteColor());
+
     }
 
     protected Button toTrashButton() {
@@ -134,7 +161,7 @@ public class NoteComponent extends VerticalLayout {
         toTrashButton.setTooltipText("Move to trash");
         toTrashButton.addClickListener(click -> {
             toTrash();
-            // ispali event
+
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
             makeNotification(
                     "Note moved to Trash",
@@ -154,7 +181,7 @@ public class NoteComponent extends VerticalLayout {
         String tooltipText = this.note.isPinned() ? "Unpin" : "Pin";
         pinButton.setTooltipText(tooltipText);
         pinButton.addClickListener(e -> {
-            this.noteService.togglePin(this.note.getId());
+            this.noteService.togglePin(this.note.getNoteId());
             String message = this.note.isPinned() ? "Note unpinned" : "Note pinned";
             makeNotification(message,1200, Notification.Position.BOTTOM_START);
             ComponentUtil.fireEvent(UI.getCurrent(), new PinNoteEvent(pinButton,false));
@@ -168,7 +195,6 @@ public class NoteComponent extends VerticalLayout {
         archiveButton.addClickListener(click -> {
             toArchiveNote();
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
-            // this.updatePage();
             String message = note.isPinned() ? "Note archived and unpinned" : "Note archived";
             makeNotification(
                     message,
@@ -185,56 +211,78 @@ public class NoteComponent extends VerticalLayout {
         updateChangesButton.setTooltipText("Save note changes");
         updateChangesButton.addClickListener(click -> {
             updateNotesChanges();
-            makeNotification("Succesfully saved",1400, Notification.Position.MIDDLE);
+            makeNotification("Successfully saved",1400, Notification.Position.MIDDLE);
         });
         return updateChangesButton;
     }
 
     private void toArchiveNote() {
-        this.noteService.archiveNote(note.getId());
-        this.noteService.unpinNote(note.getId());
+        this.noteService.archiveNote(note.getNoteId());
+        this.noteService.unpinNote(note.getNoteId());
     }
 
     private void toTrash() {
         this.noteService.moveToTrash(note);
-        this.noteService.unpinNote(note.getId());
+        this.noteService.unpinNote(note.getNoteId());
     }
 
     private void updateNotesChanges(){
         note.setTitle(this.notesTitle.getValue());
         note.setText(this.notesText.getValue());
         this.noteService.saveNote(note);
-        this.note = this.noteService.findById(note.getId());
+        this.note = this.noteService.findById(note.getNoteId());
         updateNote();
         this.removeAll();
         this.add(noteHeader, notesText, multiSelectLComboBox, noteMenu, chooseColor);
     }
     //Field for selecting labels
-    //Using component Vaadin Component MultiSelectLComboBox
-    private VerticalLayout makeLabelBox(){
+    private Component makeLabelBox(){
         MultiSelectComboBox<Label> labelMultiSelectComboBox = new MultiSelectComboBox<Label>("Labels");
-        labelMultiSelectComboBox.setItems(labelService.getAllLabels());
+        // Todo napravi ovu kompoentu kako bi mogao da koristis allLabels unutare eventa
+        allLabels = new ArrayList<>(labelService.getAllLabels());
+        labelMultiSelectComboBox.setItems(allLabels);
         labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
-        labelMultiSelectComboBox.addSelectionListener(event -> {
-            //Sta je bolje? Uvijek sve labele šalji ka serveru ili samo izmjenu
-            //Mnogo toga može da se desi da se šalje
-            this.noteService.addLabelsToNote(note, event.getAddedSelection());
-                    System.out.println(event.getAddedSelection());
 
-            ArrayList <Label> newLabelsList =  new ArrayList<Label>(event.getValue().stream().toList());
-            Label addedLabel = newLabelsList.get(newLabelsList.size() - 1);
-            ArrayList <Label> oldLabelsList = new ArrayList<>(event.getOldValue().stream().toList());
+        ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,(ComponentEventListener<LabelsUpdateEvent>) event -> {
 
-            if (event.getOldValue().size() < event.getValue().size()){
-               // this.noteService.addLabelToNote(note, addedLabel);
+            allLabels = new ArrayList<>(labelService.getAllLabels());
+            labelMultiSelectComboBox.setItems(allLabels);
+            labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
+
+            List<Long> selectedLabels = noteService.getNoteLabels(note.getNoteId()).stream().map(
+                    Label::getLabelId
+            ).toList();
+            System.out.println("Selected labels +  " + selectedLabels);
+            allLabels.forEach(label -> {
+                if(selectedLabels.contains(label.getLabelId())){
+                    System.out.println("usao u petlju selected " + label);
+                    labelMultiSelectComboBox.select(label);
+
+                }
+            });
+        });
+
+        List<Long> selectedLabels =  noteService.getNoteLabels(note.getNoteId()).stream().map(
+                Label::getLabelId
+        ).toList();
+        System.out.println(selectedLabels);
+        allLabels.forEach(label -> {
+            if(selectedLabels.contains(label.getLabelId())){
+                labelMultiSelectComboBox.select(label);
             }
-            else {
-           //     this.noteService.removeLabelFromNote(note, addedLabel);
-            }
-        }
+            labelMultiSelectComboBox.addSelectionListener(event -> {
+                if(!event.getAddedSelection().isEmpty()){
+                    ArrayList<Label> addedLabel = new ArrayList<>(event.getAddedSelection());
+                    this.noteService.addLabelsToNote(note, addedLabel);
+                }
+                else if(!event.getRemovedSelection().isEmpty()) {
+                    ArrayList<Label> labelList = new ArrayList<>(event.getRemovedSelection());
+                    this.noteService.removeLabelSFromNote(note, labelList);
+                }
+            });
+        });
 
-        );
-        return new VerticalLayout(labelMultiSelectComboBox);
+        return labelMultiSelectComboBox;
     }
 
 

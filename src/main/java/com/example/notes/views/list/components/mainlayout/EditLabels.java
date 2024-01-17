@@ -2,12 +2,16 @@ package com.example.notes.views.list.components.mainlayout;
 
 import com.example.notes.services.LabelService;
 import com.example.notes.views.list.LabeledNotes;
+import com.example.notes.views.list.events.LabelsUpdateEvent;
+import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.router.RouterLink;
 
@@ -41,17 +45,21 @@ public class EditLabels extends VerticalLayout {
     private Dialog getDialogLabels() {
         Dialog dialogLabels = new Dialog();
         dialogLabels.setHeaderTitle("Edit labels:");
-        //
+
         VerticalLayout labelList = new VerticalLayout();
         HorizontalLayout addNewLabelRow = new HorizontalLayout();
         Button addLabelButton = new Button(new Icon("plus"));
+
+
+
         TextField newLabel = new TextField();
+        newLabel.setValueChangeMode(ValueChangeMode.EAGER);
+
         addLabelButton.addClickListener(e -> {
             labelService.addLabel(newLabel.getValue());
             newLabel.setValue("");
             labelList.removeAll();
             labelList.add(addNewLabelRow, getAllLabels());
-            //Zasto ovo radim?Volim da vidim kada dovucem iz baze sve da li je sve ok.
             updateLabelsInDrawer();
         });
         addNewLabelRow.add(newLabel, addLabelButton);
@@ -83,14 +91,17 @@ public class EditLabels extends VerticalLayout {
             deleteLabelButtonInDialog.setTooltipText("Delete label");
             deleteLabelButtonInDialog.addClickListener(click -> {
                 this.labelService.deleteLabel(label);
+                ComponentUtil.fireEvent(UI.getCurrent(), new LabelsUpdateEvent(this,false));
                 labelRow.removeFromParent();
                 updateLabelsInDrawer();
             });
             Button saveLabel = new Button(new Icon("check-circle-o"));
-            saveLabel.setTooltipText("Sava name changes");
-            saveLabel.addClickListener(click ->{
+            saveLabel.setTooltipText("Save name changes");
+            
+            saveLabel.addClickListener(click -> {
                 label.setName(labelName.getValue());
                 this.labelService.saveLabel(label);
+                ComponentUtil.fireEvent(UI.getCurrent(), new LabelsUpdateEvent(this,false));
                 updateLabelsInDrawer();
             });
                     // U svakom redu potrebni imati delete ikonicu, ime labele i trece dugme?

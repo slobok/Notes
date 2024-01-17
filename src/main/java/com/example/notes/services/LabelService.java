@@ -2,6 +2,7 @@ package com.example.notes.services;
 
 import com.example.notes.data.Label;
 import com.example.notes.repository.LabelRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,13 @@ public class LabelService {
 
     public void saveLabel(Label label){
         this.labelRepository.save(label);
+    }
+
+    @Transactional
+    public void editLabelName(Long labelId, String name){
+        Label label = labelRepository.findById(labelId)
+                .orElseThrow(() -> new IllegalArgumentException("Note found note with id" + labelId));
+        label.setName(name);
     }
 
     public List<Label> getAllLabels() {

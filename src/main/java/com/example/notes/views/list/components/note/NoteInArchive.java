@@ -19,15 +19,12 @@ public class NoteInArchive extends NoteComponent{
     }
 
     @Override
-    protected HorizontalLayout createNoteMenu() {
-        HorizontalLayout noteMenu = new HorizontalLayout();
-        noteMenu.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
+    protected void addButtonsToNoteMenu(HorizontalLayout noteMenu) {
         noteMenu.add(
-                saveChangesButton(),
+             //   saveChangesButton(),
                 getUnarchivedButton(),
                 super.toTrashButton()
         );
-        return noteMenu;
     }
 
     @Override
@@ -40,8 +37,8 @@ public class NoteInArchive extends NoteComponent{
         String tooltipText = this.note.isPinned() ? "Unpin" : "Pin";
         pinButton.setTooltipText(tooltipText);
         pinButton.addClickListener(e -> {
-            this.noteService.unarchiveNote(this.note.getId());
-            this.noteService.togglePin(this.note.getId());
+            this.noteService.unarchiveNote(this.note.getNoteId());
+            this.noteService.togglePin(this.note.getNoteId());
             String message = "Note unarchived and pinned";
             makeNotification(message,1200, Notification.Position.BOTTOM_START);
             ComponentUtil.fireEvent(UI.getCurrent(),new PinNoteEvent(pinButton,false));
@@ -54,7 +51,7 @@ public class NoteInArchive extends NoteComponent{
         Button unarchiveButton = new Button(new Icon("arrow-circle-up"));
         unarchiveButton.setTooltipText("Unarchive note");
         unarchiveButton.addClickListener(klik -> {
-            this.noteService.unarchiveNote(note.getId());
+            this.noteService.unarchiveNote(note.getNoteId());
             ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification(
                     "Note unarchived",

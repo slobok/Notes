@@ -77,7 +77,8 @@ public class CreatingNewNoteComponent extends VerticalLayout {
     }
 
     private void createNewNote(TextField newNoteTitle, TextArea newNoteText) {
-        this.noteService.saveNote(new Note(newNoteTitle.getValue(),  newNoteText.getValue(),1L));
+        String noteColor = "#FFFAF0";
+        this.noteService.saveNote(new Note(newNoteTitle.getValue(),  newNoteText.getValue(),1L, noteColor));
         this.newNoteText.setValue("");
         this.newNoteTitle.setValue("");
     }

@@ -2,32 +2,32 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-@Table
 @Entity
 public class Label {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    //Ne moze da postoji label sa istim imenom za jednog korisnika
+    @Column(name = "label_id")
+    private Long labelId;
+
     @Column(unique=true)
     private String name;
     private Long userId;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "note_Label",
-            joinColumns = @JoinColumn(name = "note_id"),
-            inverseJoinColumns = @JoinColumn(name = "label_id"))
+            joinColumns = @JoinColumn(name = "label_id"),
+            inverseJoinColumns = @JoinColumn(name = "note_id"))
+    private   List<Note> labeledNotes = new ArrayList<>();
 
-    Set<Note> labeledNotes;
-
-    public Set<Note> getLabeledNote() {
+    public List<Note> getLabeledNote() {
         return labeledNotes;
     }
 
-    public void setLabeledNote(Set<Note> labeledNote) {
+    public void setLabeledNote(List<Note> labeledNote) {
         this.labeledNotes = labeledNote;
     }
 
@@ -41,12 +41,12 @@ public class Label {
         this.userId = userId;
     }
 
-    public Long getId() {
-        return id;
+    public Long getLabelId() {
+        return labelId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLabelId(Long labelId) {
+        this.labelId = labelId;
     }
 
     public String getName() {
@@ -65,18 +65,18 @@ public class Label {
         this.userId = userId;
     }
 
-    public Set<Note> getLabeledNotes() {
+    public List<Note> getLabeledNotes() {
         return labeledNotes;
     }
 
-    public void setLabeledNotes(Set<Note> labeledNotes) {
+    public void setLabeledNotes(List<Note> labeledNotes) {
         this.labeledNotes = labeledNotes;
     }
 
     @Override
     public String toString() {
         return "Label{" +
-                "id=" + id +
+                "id=" + labelId +
                 ", name='" + name + '\'' +
                 '}';
     }

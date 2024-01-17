@@ -7,9 +7,12 @@ import com.example.notes.views.list.LabeledNotes;
 import com.example.notes.views.list.NotesList;
 import com.example.notes.views.list.TrashedNotes;
 import com.example.notes.views.list.events.CountingNotesEvent;
+import com.example.notes.views.list.events.LabelsUpdateEvent;
+import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -21,6 +24,8 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 
 
 public class SideNavyPanel extends Div {
@@ -91,16 +96,21 @@ public class SideNavyPanel extends Div {
 
     private  Dialog getLabelsDialog() {
         Dialog labelsDialog = new Dialog("Labels dialog");
+        Button closeDialogButton = new Button(LumoIcon.CROSS.create());
+        closeDialogButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        labelsDialog.getHeader().add(closeDialogButton);
+        closeDialogButton.addClickListener(event -> {
+           labelsDialog.close();
+        });
 
         VerticalLayout labelList = new VerticalLayout();
         HorizontalLayout addNewLabelRow = new HorizontalLayout();
 
         Button addLabelButton = new Button(new Icon("plus"));
         TextField newLabel = new TextField();
-
         addLabelButton.addClickListener(e -> {
-
             this.labelService.addLabel(newLabel.getValue());
+            ComponentUtil.fireEvent(UI.getCurrent(),new LabelsUpdateEvent(this,false));
             newLabel.setValue("");
             labelList.removeAll();
             labelList.add(addNewLabelRow, getAllLabels());
@@ -130,6 +140,7 @@ public class SideNavyPanel extends Div {
             deleteLabelButtonInDialog.setTooltipText("Delete label");
             deleteLabelButtonInDialog.addClickListener(click -> {
                 this.labelService.deleteLabel(label);
+                ComponentUtil.fireEvent(UI.getCurrent(),new LabelsUpdateEvent(this,false));
                 labelRow.removeFromParent();
                 updateSideNavLabels();
             });
@@ -137,7 +148,8 @@ public class SideNavyPanel extends Div {
             saveLabel.setTooltipText("Sava name changes");
             saveLabel.addClickListener(click ->{
                 label.setName(labelName.getValue());
-                this.labelService.saveLabel(label);
+                this.labelService.editLabelName(label.getLabelId(), labelName.getValue());
+                ComponentUtil.fireEvent(UI.getCurrent(),new LabelsUpdateEvent(this,false));
                 updateSideNavLabels();
             });
             // U svakom redu potrebni imati delete ikonicu, ime labele i trece dugme?
