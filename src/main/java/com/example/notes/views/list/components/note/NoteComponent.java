@@ -14,6 +14,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
@@ -25,6 +26,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 
@@ -51,12 +55,13 @@ public class NoteComponent extends VerticalLayout {
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
         this.multiSelectLComboBox = makeLabelBox();
-        this.chooseColor  = new HorizontalLayout(changeNotesColor());
+        this.chooseColor  = new HorizontalLayout(setNotesBackgroundColor());
         updateNote();
+        setTextSaveMode();
         this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu, chooseColor);
     }
 
-    private Input changeNotesColor() {
+    private Input setNotesBackgroundColor() {
         Input chooseColor = new Input();
         chooseColor.setType("color");
         chooseColor.setValue(note.getNoteColor());
@@ -98,6 +103,10 @@ public class NoteComponent extends VerticalLayout {
         notesText.getStyle().setDisplay(Style.Display.BLOCK);
         notesText.setVisible(true);
 
+        return notesText;
+    }
+
+    private void setTextSaveMode() {
         notesText.setValueChangeMode(ValueChangeMode.EAGER);
         notesText.addValueChangeListener(event -> {
             note.setText(notesText.getValue());
@@ -106,8 +115,15 @@ public class NoteComponent extends VerticalLayout {
             // TODO tekst
             this.noteService.saveNote(note);
         });
-        return notesText;
+
+        notesTitle.setValueChangeMode(ValueChangeMode.EAGER);
+        notesTitle.addValueChangeListener(event -> {
+            note.setTitle(notesTitle.getValue());
+            this.noteService.saveNote(note);
+        });
+
     }
+
     private VerticalLayout createCheckBox() {
         VerticalLayout checkbox = new VerticalLayout();
         checkbox.getStyle().setPadding("0px");
@@ -134,15 +150,15 @@ public class NoteComponent extends VerticalLayout {
         notesTitle.getStyle().setMargin("0");
         notesTitle.getStyle().setPadding("0px");
         notesTitle.getStyle().setFont("88px");
+        notesTitle.getStyle().setFont("Google Sans,Arial,Roboto");
 
-        notesTitle.setValueChangeMode(ValueChangeMode.EAGER);
-        notesTitle.addValueChangeListener(event -> {
-            note.setTitle(notesTitle.getValue());
-            this.noteService.saveNote(note);
-        });
 
         noteHeader.add(notesTitle, pin);
         return noteHeader;
+    }
+
+    protected void setEnabledNoteTitleAndText(){
+
     }
 
     private void stylingThisComponent() {
@@ -239,12 +255,14 @@ public class NoteComponent extends VerticalLayout {
     private Component makeLabelBox(){
         MultiSelectComboBox<Label> labelMultiSelectComboBox = new MultiSelectComboBox<Label>("Labels");
         // Todo napravi ovu kompoentu kako bi mogao da koristis allLabels unutare eventa
+
+
         allLabels = new ArrayList<>(labelService.getAllLabels());
         labelMultiSelectComboBox.setItems(allLabels);
         labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
 
-        ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,(ComponentEventListener<LabelsUpdateEvent>) event -> {
 
+        ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,(ComponentEventListener<LabelsUpdateEvent>) event -> {
             allLabels = new ArrayList<>(labelService.getAllLabels());
             labelMultiSelectComboBox.setItems(allLabels);
             labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
@@ -261,6 +279,7 @@ public class NoteComponent extends VerticalLayout {
                 }
             });
         });
+
 
         List<Long> selectedLabels =  noteService.getNoteLabels(note.getNoteId()).stream().map(
                 Label::getLabelId
@@ -286,6 +305,9 @@ public class NoteComponent extends VerticalLayout {
     }
 
 
+
+
+
     protected static MenuBar getMenuBar() {
         MenuBar menuBar = new MenuBar();
         MenuItem moreItem = menuBar.addItem(new Icon("ellipsis-v"));
@@ -308,5 +330,4 @@ public class NoteComponent extends VerticalLayout {
         notification.setDuration(durationInMilliseconds);
         notification.setPosition(position);
     }
-
 }

@@ -1,16 +1,16 @@
 package com.example.notes.data;
 
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Label {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "label_id")
-    private Long labelId;
+    private  Long labelId;
 
     @Column(unique=true)
     private String name;

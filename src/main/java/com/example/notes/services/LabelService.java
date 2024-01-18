@@ -19,6 +19,10 @@ public class LabelService {
         this.labelRepository.save(label);
     }
 
+    public int countLabels(){
+        return (int)labelRepository.count();
+    }
+
     @Transactional
     public void editLabelName(Long labelId, String name){
         Label label = labelRepository.findById(labelId)

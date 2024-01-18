@@ -24,6 +24,8 @@ public class NoteInTrash extends  NoteComponent{
                 getDeleteButton()
         );
     }
+
+
     private Button getRestoreButton() {
         Button restore = new Button(new Icon("arrows-long-up"));
         restore.setTooltipText("Restore note");

@@ -1,5 +1,6 @@
 package com.example.notes.views.list.components.mainlayout;
 
+import com.example.notes.data.Label;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.ArchivedNotes;
@@ -8,13 +9,13 @@ import com.example.notes.views.list.NotesList;
 import com.example.notes.views.list.TrashedNotes;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.LabelsUpdateEvent;
-import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -23,9 +24,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.RouteParameters;
-import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.LumoIcon;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class SideNavyPanel extends Div {
@@ -103,21 +108,51 @@ public class SideNavyPanel extends Div {
            labelsDialog.close();
         });
 
+        Span message = new Span(" ");
+        message.getStyle().setColor("red");
+        message.getStyle().set("font-style","italic");
+        message.setVisible(true);
+        labelsDialog.add(message);
+
         VerticalLayout labelList = new VerticalLayout();
         HorizontalLayout addNewLabelRow = new HorizontalLayout();
 
         Button addLabelButton = new Button(new Icon("plus"));
-        TextField newLabel = new TextField();
+        addLabelButton.setEnabled(false);
+
+
+        TextField newLabelName = new TextField();
         addLabelButton.addClickListener(e -> {
-            this.labelService.addLabel(newLabel.getValue());
+            this.labelService.addLabel(newLabelName.getValue());
             ComponentUtil.fireEvent(UI.getCurrent(),new LabelsUpdateEvent(this,false));
-            newLabel.setValue("");
+            newLabelName.setValue("");
             labelList.removeAll();
             labelList.add(addNewLabelRow, getAllLabels());
             updateSideNavLabels();
         });
 
-        addNewLabelRow.add(newLabel, addLabelButton);
+        newLabelName.setValueChangeMode(ValueChangeMode.EAGER);
+        AtomicReference<ArrayList<String>> listLabelsName = new AtomicReference<>(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).toList()));
+        ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,event -> {
+            listLabelsName.set(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).toList()));
+        });
+        newLabelName.addValueChangeListener(event -> {
+            if(listLabelsName.get().contains(newLabelName.getValue()) ) {
+                addLabelButton.setEnabled(false);
+                message.setText("Label already exists");
+            }
+            else if(newLabelName.getValue().isEmpty() || newLabelName.getValue().matches("\\s*")){
+                addLabelButton.setEnabled(false);
+                message.setText("Enter name");
+            }
+            else {
+                addLabelButton.setEnabled(true);
+                addLabelButton.setTooltipText("Add new label");
+                message.setText("");
+            }
+        });
+
+        addNewLabelRow.add(newLabelName, addLabelButton);
         labelList.add(addNewLabelRow, getAllLabels());
         labelsDialog.add(labelList);
         return labelsDialog;
@@ -126,14 +161,12 @@ public class SideNavyPanel extends Div {
     private VerticalLayout getAllLabels() {
         VerticalLayout labelsList = new VerticalLayout();
 
-        //Label row ispod treba da sadrzi delete ikonicu za brisanje labele,
-        //kao save dugme za cuvanje izmjena imena.
-
+        labelsList.getStyle().setPadding("0px 0px 0px 0px");
         this.labelService.getAllLabels().forEach(label -> {
             // Ime labele smještam u textfield
             HorizontalLayout labelRow = new HorizontalLayout();
-            labelRow.getStyle().setPadding("0");
-            labelRow.getStyle().setMargin("0 1%");
+
+            labelRow.getStyle().setMargin("0 1% 0 0");
             TextField labelName = new TextField();
             labelName.setValue(label.getName());
             Button deleteLabelButtonInDialog  = new Button(new Icon("close-circle"));
