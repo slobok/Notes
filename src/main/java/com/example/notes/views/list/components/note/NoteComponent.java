@@ -27,6 +27,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.DataCommunicator;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -51,14 +52,13 @@ public class NoteComponent extends VerticalLayout {
         this.noteService = noteService;
         this.labelService = labelService;
         this.note = note;
-        this.multiSelectLComboBox = makeLabelBox();
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
-        this.multiSelectLComboBox = makeLabelBox();
+       // this.multiSelectLComboBox = makeLabelBox();
         this.chooseColor  = new HorizontalLayout(setNotesBackgroundColor());
         updateNote();
         setTextSaveMode();
-        this.add(noteHeader, notesText, multiSelectLComboBox ,noteMenu, chooseColor);
+        this.add(noteHeader, notesText ,noteMenu, chooseColor);
     }
 
     private Input setNotesBackgroundColor() {
@@ -249,7 +249,7 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getNoteId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, multiSelectLComboBox, noteMenu, chooseColor);
+        this.add(noteHeader, notesText, noteMenu, chooseColor);
     }
     //Field for selecting labels
     private Component makeLabelBox(){
@@ -260,7 +260,6 @@ public class NoteComponent extends VerticalLayout {
         allLabels = new ArrayList<>(labelService.getAllLabels());
         labelMultiSelectComboBox.setItems(allLabels);
         labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
-
 
         ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,(ComponentEventListener<LabelsUpdateEvent>) event -> {
             allLabels = new ArrayList<>(labelService.getAllLabels());
@@ -303,9 +302,6 @@ public class NoteComponent extends VerticalLayout {
 
         return labelMultiSelectComboBox;
     }
-
-
-
 
 
     protected static MenuBar getMenuBar() {

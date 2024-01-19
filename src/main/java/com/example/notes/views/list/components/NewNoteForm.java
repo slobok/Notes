@@ -65,6 +65,7 @@ public class NewNoteForm extends VerticalLayout {
             createNoteButton.setEnabled(!event.getValue().isBlank() || !notesTitle.getValue().isBlank());
         });
 
+
         this.add(notesTitle, textArea, createNoteButton);
     }
 
@@ -75,4 +76,5 @@ public class NewNoteForm extends VerticalLayout {
         textArea.setValue("");
         ComponentUtil.fireEvent(UI.getCurrent(), new NoteCreatedEvent(this, false));
     }
+
 }

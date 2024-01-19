@@ -2,23 +2,20 @@ package com.example.notes.views.list;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
+import com.example.notes.views.list.components.NotesGeneratorBox;
 import com.example.notes.views.list.components.NewNoteForm;
 import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.note.NoteComponent;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.virtuallist.VirtualList;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 
 import java.util.List;
@@ -30,6 +27,7 @@ public class NotesList extends VerticalLayout  {
     private TextField search = new TextField();
     private final NewNoteForm newNoteForm;
     protected H3 message;
+
     NotesList(NoteService noteService, LabelService labelService) {
         this.labelService = labelService;
         this.noteService = noteService;
@@ -65,7 +63,8 @@ public class NotesList extends VerticalLayout  {
         this.add(
                 newNoteForm,
                 getAllNotes(),
-                message
+                message,
+                new NotesGeneratorBox(noteService)
         );
     }
 

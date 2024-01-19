@@ -12,7 +12,7 @@ public class Label {
     @Column(name = "label_id")
     private  Long labelId;
 
-    @Column(unique=true)
+  //  @Column(unique=true)
     private String name;
     private Long userId;
 

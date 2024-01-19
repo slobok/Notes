@@ -132,12 +132,12 @@ public class SideNavyPanel extends Div {
         });
 
         newLabelName.setValueChangeMode(ValueChangeMode.EAGER);
-        AtomicReference<ArrayList<String>> listLabelsName = new AtomicReference<>(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).toList()));
+        AtomicReference<ArrayList<String>> listLabelsName = new AtomicReference<>(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).map(String::toUpperCase).toList()));
         ComponentUtil.addListener(UI.getCurrent(), LabelsUpdateEvent.class,event -> {
-            listLabelsName.set(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).toList()));
+            listLabelsName.set(new ArrayList<>(labelService.getAllLabels().stream().map(Label::getName).map(String::toUpperCase).toList()));
         });
         newLabelName.addValueChangeListener(event -> {
-            if(listLabelsName.get().contains(newLabelName.getValue()) ) {
+            if(listLabelsName.get().contains(newLabelName.getValue().toUpperCase()) ) {
                 addLabelButton.setEnabled(false);
                 message.setText("Label already exists");
             }

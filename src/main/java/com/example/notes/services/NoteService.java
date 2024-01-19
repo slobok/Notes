@@ -6,26 +6,22 @@ import com.example.notes.repository.LabelRepository;
 import com.example.notes.repository.NoteRepository;
 import com.example.notes.exceptions.ErrorCode;
 import com.example.notes.exceptions.NotesAppException;
-import jakarta.annotation.Nullable;
-import jakarta.persistence.TypedQuery;
+import com.github.javafaker.Faker;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
     private final NoteRepository noteRepository;
     private final LabelRepository labelRepository;
+    private final LabelService labelService;
+    public NoteService(NoteRepository noteRepository, LabelRepository labelRepository, LabelService labelService) {
 
-    public NoteService(NoteRepository noteRepository, LabelRepository labelRepository) {
         this.noteRepository = noteRepository;
         this.labelRepository = labelRepository;
+        this.labelService = labelService;
     }
 
     public List<Note> getAll() {
@@ -43,7 +39,9 @@ public class NoteService {
         if (optionalLabel.isEmpty()) {
             throw new IllegalArgumentException("Not found label with id " + label.getLabelId());
         }
-        optionalNote.get().getLabel().add(label);
+        optionalNote.get().setLabel(new ArrayList<>(List.of(optionalLabel.get())));
+        optionalLabel.get().getLabeledNote().add(optionalNote.get());
+        this.noteRepository.save(optionalNote.get());
     }
 
     @Transactional
@@ -211,6 +209,26 @@ public class NoteService {
         return new ArrayList<>(note.getLabel());
     }
 
+    @Transactional
+    public void addManyNotesToDatabase(Integer numberOfNotes){
+        for(int i = 0; i < numberOfNotes; i++){
+            Faker faker = new Faker();
 
+            Note note = noteRepository.save(new Note(
+                    faker.music().instrument(),
+                    faker.animal().name(),
+                    1L,
+                    faker.color().name()));
+                    Label label  = labelRepository.save(new Label(faker.book().title()));
+                    Label label2 = labelRepository.findById(label.getLabelId())
+                                    .orElseThrow(()->  new IllegalArgumentException("Note found label"));
+                    Note note2 = noteRepository.findById(note.getNoteId())
+                                    .orElseThrow(() -> new IllegalArgumentException("Not found note"));
+                    List <Label> labelList = new ArrayList<>(List.of(label2));
+                    addLabelsToNote(note2, labelList);
+        }
+
+
+    }
 
 }
