@@ -228,7 +228,10 @@ public class NoteService {
                     addLabelsToNote(note2, labelList);
         }
 
+    }
 
+    public List<Note> getNotesWithOffsetAndLimit(int offset,int limit){
+        return this.noteRepository.myQuery(offset,limit);
     }
 
 }

@@ -14,7 +14,10 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
@@ -64,7 +67,7 @@ public class NotesList extends VerticalLayout  {
                 newNoteForm,
                 getAllNotes(),
                 message,
-                new NotesGeneratorBox(noteService)
+                makePageNumbers(8)
         );
     }
 
@@ -117,6 +120,17 @@ public class NotesList extends VerticalLayout  {
         allNotesLayout.add(pinnedNotesLayout, notesContainer);
 
         return allNotesLayout;
+    }
+
+    protected HorizontalLayout makePageNumbers(int numberOfItemsPerPage){
+        Tabs tabs = new Tabs();
+        int numberOfNotes =  noteService.countNotes();
+        for (int index = 1; index <=  (int)Math.floor(((double)numberOfNotes / numberOfItemsPerPage)); index += 1){
+            Tab tab = new Tab(""   + index);
+            tabs.add(tab);
+        }
+        tabs.setMaxWidth("300px");
+        return  new HorizontalLayout(tabs);
     }
 
     protected void updatePage() {

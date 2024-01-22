@@ -7,6 +7,7 @@ import com.example.notes.views.list.ArchivedNotes;
 import com.example.notes.views.list.LabeledNotes;
 import com.example.notes.views.list.NotesList;
 import com.example.notes.views.list.TrashedNotes;
+import com.example.notes.views.list.components.NotesGeneratorComp;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.LabelsUpdateEvent;
 import com.vaadin.flow.component.ComponentUtil;
@@ -25,7 +26,6 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.theme.lumo.LumoIcon;
 
@@ -69,6 +69,8 @@ public class SideNavyPanel extends Div {
         nav.setWidthFull();
         add(navWrapper);
 
+
+
         updateNotesNumbers();
 
         stylizeThisComponent();
@@ -76,6 +78,9 @@ public class SideNavyPanel extends Div {
         //todo napravi isti Editlabels dialog samo ga malo izmijeni
         //todo promijeni EditLabels pojednostavi
         //Odavde ide dio za dodavanje lablela u SideNav
+
+
+        add(new NotesGeneratorComp(noteService));
 
         Button editLabelsButton = new Button("Edit Labels");
         HorizontalLayout editLablelsHl = new HorizontalLayout(editLabelsButton);

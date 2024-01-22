@@ -7,7 +7,7 @@ import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.dom.Style;
 
-
+// Zasad se komponenta ne koristi
 public class NotesGeneratorBox extends HorizontalLayout {
     private final NoteService noteService;
     Input input;

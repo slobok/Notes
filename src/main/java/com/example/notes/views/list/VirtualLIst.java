@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -33,16 +34,15 @@ private final LabelService labelService;
 
 
         ComponentRenderer <Component, Note> noteRenderer = new ComponentRenderer<>(note -> {
-            return new NoteComponent(note,noteService,labelService);
+            return new NoteComponent(note, noteService, labelService);
         });
 
         ListDataProvider<Note> noteListDataProvider = new ListDataProvider<>(noteService.getAllNotes(""));
 
         VirtualList<Note> list = new VirtualList<>();
         list.setDataProvider(noteListDataProvider);
-
-        Grid<Label> gridList = new Grid<>();
-
+        list.getStyle().setWidth("100%");
+        
         list.getStyle().setWidth("100%");
         list.getStyle().setHeight("90vh");
 
