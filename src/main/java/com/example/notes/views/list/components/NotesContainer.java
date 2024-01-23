@@ -12,7 +12,6 @@ import com.vaadin.flow.dom.Style;
 public class NotesContainer extends VerticalLayout   {
     private H6 title;
     // TODO ako ima komponente stavi naslov
-    Grid <Note> Grid = new Grid<Note>();
     public NotesContainer(){}
     public NotesContainer(H6 title){
         this.title = title;

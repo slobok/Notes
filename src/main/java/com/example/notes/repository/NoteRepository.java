@@ -18,7 +18,7 @@ public interface NoteRepository extends JpaRepository<Note, Long > {
     int countByIsTrashed(int isTrashed);
     int countByIsTrashedAndIsArchived(int isTrashed, int isArchived);
 
-    @Query(value = "SELECT n FROM Note n limit :selectedSamples offset :firstIndex"
+    @Query(value = "SELECT * FROM Note  limit :selectedSamples offset :firstIndex"
             , nativeQuery = true)
     List<Note> myQuery(@Param("firstIndex") Integer offset, @Param("selectedSamples") Integer limit);
 

@@ -2,9 +2,9 @@ package com.example.notes.views.list;
 import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
-import com.example.notes.views.list.components.NotesGeneratorBox;
 import com.example.notes.views.list.components.NewNoteForm;
 import com.example.notes.views.list.components.NotesContainer;
+import com.example.notes.views.list.components.PaginationComp;
 import com.example.notes.views.list.components.note.NoteComponent;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
@@ -37,7 +37,6 @@ public class NotesList extends VerticalLayout  {
         this.newNoteForm = new NewNoteForm(noteService);
         createMessage();
         addComponentsToPage();
-        //Todo promijeni imena ovih listenera, dobro da ona kazuju šta se dešava a ne da ja kucam tekst
         searchListener();
         listenerForPinNoteEvent();
         listenerToForAddingNewNote();
@@ -67,6 +66,7 @@ public class NotesList extends VerticalLayout  {
                 newNoteForm,
                 getAllNotes(),
                 message,
+              // new PaginationComp(8,noteService.countNotes())
                 makePageNumbers(8)
         );
     }
@@ -96,6 +96,7 @@ public class NotesList extends VerticalLayout  {
 
         notesContainer.getTitle().setVisible(false);
         NotesContainer pinnedNotesLayout = new NotesContainer(new H6("Pinned"));
+
         pinnedNotesLayout.setVisible(false);
         List<Note> allNotes = this.noteService.getAllNotes(searchString);
 
@@ -125,10 +126,11 @@ public class NotesList extends VerticalLayout  {
     protected HorizontalLayout makePageNumbers(int numberOfItemsPerPage){
         Tabs tabs = new Tabs();
         int numberOfNotes =  noteService.countNotes();
-        for (int index = 1; index <=  (int)Math.floor(((double)numberOfNotes / numberOfItemsPerPage)); index += 1){
-            Tab tab = new Tab(""   + index);
-            tabs.add(tab);
+        for (int index = 1; index <=  (int)Math.ceil(((double)numberOfNotes / numberOfItemsPerPage)); index += 1){
+            Tab tabNumber = new Tab(""   + index);
+            tabs.add(tabNumber);
         }
+
         tabs.setMaxWidth("300px");
         return  new HorizontalLayout(tabs);
     }

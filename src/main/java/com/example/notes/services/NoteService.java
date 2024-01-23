@@ -215,8 +215,8 @@ public class NoteService {
             Faker faker = new Faker();
 
             Note note = noteRepository.save(new Note(
-                    faker.music().instrument(),
                     faker.animal().name(),
+                    faker.lorem().characters(40),
                     1L,
                     faker.color().name()));
                     Label label  = labelRepository.save(new Label(faker.book().title()));
@@ -231,7 +231,18 @@ public class NoteService {
     }
 
     public List<Note> getNotesWithOffsetAndLimit(int offset,int limit){
-        return this.noteRepository.myQuery(offset,limit);
+        return this.noteRepository.myQuery(offset, limit);
     }
+
+    public void deleteAllNotes(){
+        try {
+            this.noteRepository.deleteAll();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
 
 }
