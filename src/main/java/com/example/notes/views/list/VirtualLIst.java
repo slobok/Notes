@@ -1,6 +1,7 @@
 package com.example.notes.views.list;
 
 import com.example.notes.data.Note;
+import com.example.notes.services.FajlService;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
@@ -23,9 +24,11 @@ public class VirtualLIst extends Div {
 
     private final NoteService noteService;
     private final LabelService labelService;
-    public VirtualLIst(NoteService noteService, LabelService labelService){
+    private final FajlService fajlService;
+    public VirtualLIst(NoteService noteService, LabelService labelService, FajlService fajlService){
         this.noteService = noteService;
         this.labelService = labelService;
+        this.fajlService = fajlService;
 
         List<Note> noteList = noteService.getAllNotes("");
 
@@ -48,7 +51,7 @@ public class VirtualLIst extends Div {
             Div div = new Div();
             div.setWidth("100%");
             notes.forEach(note -> {
-                div.add(new NoteComponent(note, noteService, labelService));
+                div.add(new NoteComponent(note, noteService, labelService, fajlService));
             });
             return div;
         }

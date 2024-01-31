@@ -5,6 +5,7 @@ import com.example.notes.services.NoteService;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.Route;
 
 import java.util.List;
@@ -20,12 +21,32 @@ public class NotesTableView  extends VerticalLayout {
         grid.addColumn(Note::getText).setHeader("Notes_text");
         grid.addColumn(Note::getNoteColor).setHeader("Notes_color");
 
-        grid.setAllRowsVisible(true);
 
-        List<Note> allNotes = noteService.getAllNotes("");
-        grid.setItems(allNotes);
-        grid.setPageSize(4000);
+        //Pogledaj sta radi funkcija ispod isklučuje renderovanje
+        //grid.setAllRowsVisible(true);
 
+
+        DataProvider<Note, Void> dataProvider =
+                DataProvider.fromCallbacks(
+                        // First callback fetches items based on a query
+                        query -> {
+                            // The index of the first item to load
+                            int offset = query.getOffset();
+                            // The number of items to load
+                            int limit = query.getLimit();
+
+                            List<Note> noteList = noteService.getNotesWithOffsetAndLimit(offset,limit);
+                            return noteList.stream();
+                        },
+                        // Second callback fetches the total number of items currently in the Grid.
+                        // The grid can then use it to properly adjust the scrollbars.
+                        query -> noteService.countNotes()
+                );
+
+        // List<Note> allNotes = noteService.getAllNotes("");
+        //  grid.setItems(allNotes);
+        //  grid.setPageSize(4000);
+        grid.setDataProvider(dataProvider);
         add(grid);
 
     }

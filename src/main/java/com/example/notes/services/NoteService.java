@@ -40,7 +40,7 @@ public class NoteService {
             throw new IllegalArgumentException("Not found label with id " + label.getLabelId());
         }
         optionalNote.get().setLabel(new ArrayList<>(List.of(optionalLabel.get())));
-        optionalLabel.get().getLabeledNote().add(optionalNote.get());
+        optionalLabel.get().getLabeledNotes().add(optionalNote.get());
         this.noteRepository.save(optionalNote.get());
     }
 
@@ -135,6 +135,12 @@ public class NoteService {
     }
 
     @Transactional
+    public void archiveMoreNotes(Set<Long > selectedNotes){
+        selectedNotes.forEach(this::archiveNote);
+    }
+
+
+    @Transactional
     public void moveToTrash(Note note) {
         Note n = this.noteRepository.findById(note.getNoteId())
                 .orElseThrow(() -> new IllegalStateException("Not found note"));
@@ -164,6 +170,18 @@ public class NoteService {
         Note note = this.noteRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Not found note"));
         note.changePinned();
+    }
+
+    @Transactional
+    public void pinNote(Long noteId){
+        Note note = this.noteRepository.findById(noteId)
+                .orElseThrow(() -> new IllegalArgumentException("Not dound note with id " + noteId));
+        note.setPinned(true);
+    }
+
+    @Transactional
+    public void pinManyNotes(Set<Long> noteSet){
+        noteSet.forEach(this::pinNote);
     }
 
     @Transactional
@@ -243,6 +261,12 @@ public class NoteService {
         }
     }
 
+
+    public  List<Note> getNotesByLabel(Label label){
+        System.out.println(label.getName());
+        System.out.println(new ArrayList<>(noteRepository.findByLabel(label)));
+        return this.noteRepository.findByLabel(label);
+    }
 
 
 }

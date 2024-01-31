@@ -12,7 +12,7 @@ public class Label {
     @Column(name = "label_id")
     private  Long labelId;
 
-  //  @Column(unique=true)
+    //@Column(unique=true)
     private String name;
     private Long userId;
 
@@ -23,13 +23,6 @@ public class Label {
             inverseJoinColumns = @JoinColumn(name = "note_id"))
     private   List<Note> labeledNotes = new ArrayList<>();
 
-    public List<Note> getLabeledNote() {
-        return labeledNotes;
-    }
-
-    public void setLabeledNote(List<Note> labeledNote) {
-        this.labeledNotes = labeledNote;
-    }
 
     public Label(){}
     public Label(String name) {
@@ -66,7 +59,7 @@ public class Label {
     }
 
     public List<Note> getLabeledNotes() {
-        return labeledNotes;
+        return new ArrayList<>(labeledNotes);
     }
 
     public void setLabeledNotes(List<Note> labeledNotes) {

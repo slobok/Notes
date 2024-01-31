@@ -204,7 +204,7 @@ public class SideNavyPanel extends Div {
         this.labelService.getAllLabels().forEach(label -> {
             labelsSideNav.addItem(new SideNavItem(label.getName(),
                     LabeledNotes.class,
-                    new RouteParameters("label", label.getName())));
+                    new RouteParameters("label",  label.getName())));
         });
     }
 

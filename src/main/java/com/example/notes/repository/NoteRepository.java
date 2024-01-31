@@ -1,5 +1,6 @@
 package com.example.notes.repository;
 
+import com.example.notes.data.Label;
 import com.example.notes.data.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,7 @@ public interface NoteRepository extends JpaRepository<Note, Long > {
     List<Note> findByIsTrashedAndIsArchived(int isTrashed, int isArchived);
     int countByIsTrashed(int isTrashed);
     int countByIsTrashedAndIsArchived(int isTrashed, int isArchived);
+    List <Note> findByLabel(Label label);
 
     @Query(value = "SELECT * FROM Note  limit :selectedSamples offset :firstIndex"
             , nativeQuery = true)
