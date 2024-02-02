@@ -23,7 +23,6 @@ import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -205,7 +204,6 @@ public class NoteComponent extends VerticalLayout {
         toTrashButton.setTooltipText("Move to trash");
         toTrashButton.addClickListener(click -> {
             toTrash();
-
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
             makeNotification(
                     "Note moved to Trash",

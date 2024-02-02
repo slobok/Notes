@@ -54,8 +54,8 @@ public class TrashedNotes extends NotesList  {
 
         VirtualList <List<Note>> virtualList = new VirtualList<>();
         virtualList.setRenderer(super.makeNotesRenderer());
-
-        listofNotesLists = makeListsOfList(noteService.getAllTrashedNotes(getSearch().getValue()));
+        listDataProvider = new ListDataProvider<>(makeListsOfList(getPageNotes()));
+        listofNotesLists = makeListsOfList(getPageNotes());
      //   listDataProvider = new ListDataProvider<>(listofNotesLists);
         listDataProvider.getItems().clear();
         listDataProvider.getItems().addAll(listofNotesLists);
@@ -65,11 +65,14 @@ public class TrashedNotes extends NotesList  {
         return notesList;
     }
 
+    protected List<Note> getPageNotes(){
+        return  this.noteService.getAllTrashedNotes(getSearch().getValue());
+    }
+
     @Override
     protected void updatePage(){
-        listDataProvider = new ListDataProvider<>(makeListsOfList(this.noteService.getAllTrashedNotes(getSearch().getValue())));
+        listofNotesLists = makeListsOfList(getPageNotes());
         listDataProvider.getItems().clear();
-        listofNotesLists = makeListsOfList(noteService.getAllTrashedNotes(getSearch().getValue()));
         listDataProvider.getItems().addAll(listofNotesLists);
         listDataProvider.refreshAll();
     }

@@ -17,7 +17,6 @@ public class NoteInTrash extends  NoteComponent{
         super(note, noteService,labelService, fajlService);
     }
 
-
     @Override
     protected void addButtonsToNoteMenu(HorizontalLayout noteMenu) {
         noteMenu.add(
@@ -34,8 +33,6 @@ public class NoteInTrash extends  NoteComponent{
             this.noteService.restoreNote(note.getNoteId());
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
             makeNotification("Note restored",1200, Notification.Position.BOTTOM_START);
-            this.removeFromParent();
-
         });
         return restore;
     }
@@ -47,7 +44,6 @@ public class NoteInTrash extends  NoteComponent{
             this.noteService.deleteNote(note);
             ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
             makeNotification("Note deleted",1200, Notification.Position.BOTTOM_START);
-            this.removeFromParent();
         });
         return deleteButton;
     }

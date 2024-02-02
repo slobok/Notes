@@ -58,7 +58,6 @@ public class NoteInArchive extends NoteComponent{
                     "Note unarchived",
                     1200,
                     Notification.Position.BOTTOM_START);
-            this.removeFromParent();
         });
         return  unarchiveButton;
     }

@@ -29,7 +29,6 @@ public class VirtualLIst extends Div {
         this.noteService = noteService;
         this.labelService = labelService;
         this.fajlService = fajlService;
-
         List<Note> noteList = noteService.getAllNotes("");
 
 

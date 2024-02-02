@@ -58,8 +58,6 @@ public class NotesList extends VerticalLayout  {
         listenerToForAddingNewNote();
     }
 
-
-
     private void listenerForPinNoteEvent() {
         ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class, (ComponentEventListener<PinNoteEvent>) event ->  {
             updatePage();
