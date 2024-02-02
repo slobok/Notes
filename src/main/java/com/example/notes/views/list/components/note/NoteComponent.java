@@ -23,7 +23,6 @@ import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Input;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -33,26 +32,21 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MultiFileBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.StreamResourceWriter;
-import com.vaadin.flow.server.UploadException;
-import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.FileItemIterator;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.lang.model.element.AnnotationValue;
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class NoteComponent extends VerticalLayout {
@@ -297,7 +291,6 @@ public class NoteComponent extends VerticalLayout {
             allLabels = new ArrayList<>(labelService.getAllLabels());
             labelMultiSelectComboBox.setItems(allLabels);
             labelMultiSelectComboBox.setItemLabelGenerator(Label::getName);
-
             List<Long> selectedLabels = noteService.getNoteLabels(note.getNoteId()).stream().map(
                     Label::getLabelId
             ).toList();
@@ -306,11 +299,9 @@ public class NoteComponent extends VerticalLayout {
                 if(selectedLabels.contains(label.getLabelId())){
                     System.out.println("usao u petlju selected " + label);
                     labelMultiSelectComboBox.select(label);
-
                 }
             });
         });
-
 
         List<Long> selectedLabels =  noteService.getNoteLabels(note.getNoteId()).stream().map(
                 Label::getLabelId
@@ -360,36 +351,54 @@ public class NoteComponent extends VerticalLayout {
     }
 
     protected HorizontalLayout fileInput(){
-        MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
-        Upload upload = new Upload(multiFileMemoryBuffer);
-        //Podesti maksimalnu veličinu fajla za upload
+    //    MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
+        MultiFileBuffer multiFileBuffer  = new MultiFileBuffer();
+
+        Upload upload = new Upload(multiFileBuffer);
+
         upload.setMaxFileSize(2000000000);
-
-
         upload.addSucceededListener(event -> {
-            InputStream fileData = multiFileMemoryBuffer.getInputStream(event.getFileName());
+            InputStream fileData = multiFileBuffer.getInputStream(event.getFileName());
             try {
 
                 MultipartFile multipartFile = new MockMultipartFile(event.getFileName(),
                         event.getFileName(),event.getMIMEType(), IOUtils.toByteArray(fileData));
-                
+
                 fajlService.saveFileToDB(multipartFile, note);
 
                 System.out.println("File saved to db");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                }
+            catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
-        });
+        );
         return new HorizontalLayout(upload);
     }
 
     protected HorizontalLayout downlaodLinksForFile(){
         Button button = new Button(VaadinIcon.FILE.create());
+        HorizontalLayout hlForLinks = new HorizontalLayout();
+        button.addClickListener(event -> {
+            makeDialog().open();
+        });
+        hlForLinks.add(button);
+        return  hlForLinks;
+    }
+
+    protected Dialog makeDialog(){
         Dialog dialog = new Dialog();
         Button closeDialog = new Button(VaadinIcon.CLOSE.create());
+        closeDialog.getStyle().setFloat(Style.FloatCss.RIGHT);
+        closeDialog.addClickListener(event -> {
+            dialog.close();
+        });
+        dialog.add(closeDialog);
+
         dialog.setCloseOnOutsideClick(true);
         VerticalLayout layoutLinks = new VerticalLayout();
-        fajlService.getNoteFiles(note).forEach(fajl -> {
+        List<Fajl>  noteFiles = fajlService.getNoteFiles(note);
+        noteFiles.stream().forEach(fajl -> {
             InputStream inputStream = new ByteArrayInputStream(fajl.getData());
             StreamResource streamResource = new StreamResource(fajl.getFileName(), () -> inputStream);
             Anchor anchor = new Anchor(streamResource, fajl.getFileName());
@@ -398,33 +407,59 @@ public class NoteComponent extends VerticalLayout {
             layoutLinks.add(anchor);
         });
         dialog.add(layoutLinks);
-        closeDialog.addClickListener(event -> {
-           dialog.close();
-        });
         Button downloadSelected = new Button(VaadinIcon.DOWNLOAD.create());
-
+        // Zamijeni redosled ovoga mozda da se ne ide do baze ako nema notesa
+        downloadSelected.setEnabled(!noteFiles.isEmpty());
         downloadSelected.addClickListener(event -> {
-
+            try {
+                makeZipFromFiles();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
-        dialog.add(closeDialog, downloadSelected);
-        button.addClickListener(event -> {
-            dialog.open();
-        });
-
-        HorizontalLayout hlForLinks = new HorizontalLayout();
-        hlForLinks.add(button);
-        return  hlForLinks;
+        dialog.add(new HorizontalLayout(downloadSelected));
+        return dialog;
     }
-    protected void makeZipFromFiles() throws FileNotFoundException {
-        FileOutputStream fos = new FileOutputStream("compressed.zip");
+
+
+    protected void makeZipFromFiles() throws IOException {
+        FileOutputStream fos = new FileOutputStream("Note" + note.getNoteId()  + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
-        List<Fajl> allFiles =  this.fajlService.getAllFiles();
-        byte[] bytes = new byte[1024];
-        int length;
+        List<Fajl> allFiles =  this.fajlService.getNoteFiles(note);
         allFiles.forEach(fajl -> {
+            InputStream inputStream = new ByteArrayInputStream(fajl.getData());
+            ZipEntry zipEntry = new ZipEntry(fajl.getFileName());
+            try {
+                zipOut.putNextEntry(zipEntry);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            byte[] bytes = new byte[1024];
+            int length;
+            while(true) {
+                try {
+                    if (!((length = inputStream.read(bytes)) >= 0)) break;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    zipOut.write(bytes, 0, length);
 
-       });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                inputStream.close();
+                System.out.println("first file zipped");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    zipOut.close();
+    fos.close();
 
+    System.out.println("Zip finished");
 
     }
 }

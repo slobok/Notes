@@ -168,7 +168,6 @@ public class NotesList extends VerticalLayout  {
             Div div = new Div();
             div.setWidth("100%");
             div.getStyle().setDisplay(Style.Display.INLINE_BLOCK);
-
             notes.forEach(note -> {
                 setNoteType(note, div);
             });

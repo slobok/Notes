@@ -2,6 +2,8 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 @Entity
 @Table(name="Fajl")
 public class Fajl  {
