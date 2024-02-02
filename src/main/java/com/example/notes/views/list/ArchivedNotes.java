@@ -7,7 +7,6 @@ import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.note.NoteInArchive;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
-
 import java.util.List;
 
 @Route(value = "archive",layout = MainLayout.class)

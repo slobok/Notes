@@ -1,6 +1,5 @@
 package com.example.notes.views.list;
 
-import com.example.notes.data.Note;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.mainlayout.SideNavyPanel;
