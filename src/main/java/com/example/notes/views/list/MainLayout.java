@@ -141,8 +141,6 @@ public class MainLayout extends AppLayout {
         listenerToForAddingNewNote();
     }
 
-
-
     private void listenerForPinNoteEvent() {
         ComponentUtil.addListener(UI.getCurrent(), PinNoteEvent.class, (ComponentEventListener<PinNoteEvent>) event ->  {
             updateSelectedNotesmenu();

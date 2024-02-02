@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class FajlService {
@@ -26,6 +27,7 @@ public class FajlService {
         file.setFileName(multipartFile.getName());
         file.setFileType(multipartFile.getContentType());
         file.setData(multipartFile.getBytes());
+        file.setFileSize(multipartFile.getSize());
         fajlRepository.save(file);
     }
     @Transactional
@@ -48,4 +50,10 @@ public class FajlService {
     public List<Fajl> getNoteFiles(Note note){
        return this.fajlRepository.findByNote(note);
     }
+
+    public Stream<Fajl> getFilesByIdAndNote(List<Long> fileIds,Note note){
+        return getNoteFiles(note).stream().filter(fajl ->  fileIds.contains(fajl.getFileId()));
+    }
+
+
 }

@@ -18,6 +18,20 @@ public class Fajl  {
     @Lob
     private byte[] data;
 
+    private Long fileSize;
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize =  fileSize;
+    }
+
     @ManyToOne
     @JoinColumn(name="noteId")
     private Note note;

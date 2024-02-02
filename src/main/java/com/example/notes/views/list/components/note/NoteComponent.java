@@ -21,7 +21,9 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -33,19 +35,17 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileBuffer;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.server.StreamResource;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.tomcat.util.http.fileupload.FileItemIterator;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -380,10 +380,38 @@ public class NoteComponent extends VerticalLayout {
         Button button = new Button(VaadinIcon.FILE.create());
         HorizontalLayout hlForLinks = new HorizontalLayout();
         button.addClickListener(event -> {
-            makeDialog().open();
+            makeNewDialog().open();
         });
         hlForLinks.add(button);
         return  hlForLinks;
+    }
+
+    protected Dialog makeNewDialog(){
+        Dialog dialog = new Dialog();
+        Grid<Fajl> grid = new Grid<>(Fajl.class,false);
+        grid.setSelectionMode(Grid.SelectionMode.MULTI);
+
+        grid.addColumn(Fajl::getFileName).setHeader("File name");
+        grid.addColumn(Fajl::getFileType).setHeader("File type");
+        grid.setItems(fajlService.getNoteFiles(note));
+        dialog.setWidth("70%");
+        dialog.add(grid);
+        Button downloadButton = new Button(VaadinIcon.ARCHIVE.create());
+        downloadButton.setEnabled(false);
+        grid.addSelectionListener(event -> {
+            downloadButton.setEnabled(!grid.getSelectedItems().isEmpty());
+        });
+
+        downloadButton.addClickListener(event -> {
+          List <Long> listIds =   grid.getSelectedItems().stream().map(Fajl::getFileId).toList();
+            try {
+                makeZipFromFiles(fajlService.getFilesByIdAndNote(listIds, note).collect(Collectors.toList()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        dialog.add(downloadButton);
+        return dialog;
     }
 
     protected Dialog makeDialog(){
@@ -398,10 +426,14 @@ public class NoteComponent extends VerticalLayout {
         dialog.setCloseOnOutsideClick(true);
         VerticalLayout layoutLinks = new VerticalLayout();
         List<Fajl>  noteFiles = fajlService.getNoteFiles(note);
-        noteFiles.stream().forEach(fajl -> {
+        noteFiles.forEach(fajl -> {
             InputStream inputStream = new ByteArrayInputStream(fajl.getData());
-            StreamResource streamResource = new StreamResource(fajl.getFileName(), () -> inputStream);
-            Anchor anchor = new Anchor(streamResource, fajl.getFileName());
+            // todo Neka tu bude samo link a onda kada pritisnem na fajl neka krene download dovlacenje iz baze i download
+
+            Anchor anchor = new Anchor(new StreamResource(fajl.getFileName() , () -> inputStream)
+                                    , fajl.getFileName() );
+
+            anchor.getElement().getThemeList().add("primary");
             anchor.setTarget("_blank");
             anchor.getElement().setAttribute("download", true);
             layoutLinks.add(anchor);
@@ -409,10 +441,10 @@ public class NoteComponent extends VerticalLayout {
         dialog.add(layoutLinks);
         Button downloadSelected = new Button(VaadinIcon.DOWNLOAD.create());
         // Zamijeni redosled ovoga mozda da se ne ide do baze ako nema notesa
-        downloadSelected.setEnabled(!noteFiles.isEmpty());
+        downloadSelected.setVisible(!noteFiles.isEmpty());
         downloadSelected.addClickListener(event -> {
             try {
-                makeZipFromFiles();
+                makeZipFromFiles(this.fajlService.getNoteFiles(note));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -422,10 +454,9 @@ public class NoteComponent extends VerticalLayout {
     }
 
 
-    protected void makeZipFromFiles() throws IOException {
+    protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
         FileOutputStream fos = new FileOutputStream("Note" + note.getNoteId()  + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
-        List<Fajl> allFiles =  this.fajlService.getNoteFiles(note);
         allFiles.forEach(fajl -> {
             InputStream inputStream = new ByteArrayInputStream(fajl.getData());
             ZipEntry zipEntry = new ZipEntry(fajl.getFileName());
@@ -458,8 +489,6 @@ public class NoteComponent extends VerticalLayout {
         });
     zipOut.close();
     fos.close();
-
-    System.out.println("Zip finished");
-
+    System.out.println("Ziping finished");
     }
 }
