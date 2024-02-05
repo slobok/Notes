@@ -1,6 +1,7 @@
 package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Note;
+import com.example.notes.services.FajlService;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.events.CountingNotesEvent;
@@ -14,8 +15,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.dom.Style;
 
 public class NoteInArchive extends NoteComponent{
-    public NoteInArchive(Note note, NoteService noteService, LabelService labelService) {
-        super(note, noteService, labelService);
+    public NoteInArchive(Note note, NoteService noteService, LabelService labelService, FajlService fajlService) {
+        super(note, noteService, labelService, fajlService);
     }
 
     @Override
@@ -57,7 +58,6 @@ public class NoteInArchive extends NoteComponent{
                     "Note unarchived",
                     1200,
                     Notification.Position.BOTTOM_START);
-            this.removeFromParent();
         });
         return  unarchiveButton;
     }

@@ -2,6 +2,7 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,17 @@ public class Note {
 
     @ManyToMany(mappedBy = "labeledNotes",cascade = CascadeType.ALL)
     private List<Label> label = new ArrayList<>();
+
+    @OneToMany
+    private List<Fajl> files;
+
+    public List<Fajl> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<Fajl> files) {
+        this.files = files;
+    }
 
     public Note(){}
     public Note(String title, String text, Long createdByUser, String noteColor) {
