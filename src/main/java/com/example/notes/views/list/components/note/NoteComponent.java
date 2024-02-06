@@ -32,14 +32,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileBuffer;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.server.StreamResource;
-import org.apache.commons.compress.utils.IOUtils;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.*;
 import java.util.ArrayList;
@@ -182,7 +182,6 @@ public class NoteComponent extends VerticalLayout {
         notesTitle.getStyle().setFont("88px");
         notesTitle.getStyle().setFont("Google Sans,Arial,Roboto");
 
-
         noteHeader.add(notesTitle, pin);
         return noteHeader;
     }
@@ -273,7 +272,7 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getNoteId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, noteMenu, chooseColor);
+        this.add(noteHeader, notesText, noteMenu, chooseColor, fileInput(),downlaodLinksForFile());
     }
     //Field for selecting labels
     private Component makeLabelBox(){
@@ -354,10 +353,22 @@ public class NoteComponent extends VerticalLayout {
 
         Upload upload = new Upload(multiFileBuffer);
 
+
         upload.setMaxFileSize(2000000000);
         upload.addSucceededListener(event -> {
             InputStream fileData = multiFileBuffer.getInputStream(event.getFileName());
+
+            // Saving file on filesystem
+
             try {
+                this.fajlService.saveFile(fileData, note, event.getFileName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Uncomment to save file in to Database in format of arrayBytes
+
+            /*   try {
 
                 MultipartFile multipartFile = new MockMultipartFile(event.getFileName(),
                         event.getFileName(),event.getMIMEType(), IOUtils.toByteArray(fileData));
@@ -368,7 +379,7 @@ public class NoteComponent extends VerticalLayout {
                 }
             catch (Exception e) {
                     throw new RuntimeException(e);
-                }
+                }*/
             }
         );
         return new HorizontalLayout(upload);
@@ -384,6 +395,7 @@ public class NoteComponent extends VerticalLayout {
         return  hlForLinks;
     }
 
+
     protected Dialog makeNewDialog(){
         Dialog dialog = new Dialog();
         Grid<Fajl> grid = new Grid<>(Fajl.class,false);
@@ -391,10 +403,13 @@ public class NoteComponent extends VerticalLayout {
 
         grid.addColumn(Fajl::getFileName).setHeader("File name");
         grid.addColumn(Fajl::getFileType).setHeader("File type");
-        grid.setItems(fajlService.getNoteFiles(note));
+
+        ListDataProvider<Fajl> listDataProvider = new ListDataProvider<>(fajlService.getNoteFiles(note));
+        grid.setDataProvider(listDataProvider);
+
         dialog.setWidth("70%");
         dialog.add(grid);
-        Button downloadButton = new Button(VaadinIcon.ARCHIVE.create());
+        Button downloadButton = new Button(VaadinIcon.DOWNLOAD.create());
         downloadButton.setEnabled(false);
         grid.addSelectionListener(event -> {
             downloadButton.setEnabled(!grid.getSelectedItems().isEmpty());
@@ -408,7 +423,24 @@ public class NoteComponent extends VerticalLayout {
                 throw new RuntimeException(e);
             }
         });
-        dialog.add(downloadButton);
+        Button deleteSelectedFiles = new Button(VaadinIcon.DEL.create());
+        deleteSelectedFiles.addClickListener(event -> {
+            grid.getSelectedItems().stream().forEach( fajl -> {
+                System.out.println(fajl.getFileName());
+                   try{
+                       this.fajlService.deleteFile(fajl);
+                   }
+                   catch (Exception e){
+                       System.out.println(e.getMessage());
+                   }
+            });
+
+            listDataProvider.getItems().clear();
+            listDataProvider.getItems().addAll(this.fajlService.getNoteFiles(note));
+            listDataProvider.refreshAll();
+        });
+
+        dialog.add(downloadButton, deleteSelectedFiles);
         return dialog;
     }
 
@@ -451,9 +483,8 @@ public class NoteComponent extends VerticalLayout {
         return dialog;
     }
 
-
     protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
-        FileOutputStream fos = new FileOutputStream("Note" + note.getNoteId()  + ".zip");
+        FileOutputStream fos = new FileOutputStream("Note " + note.getNoteId()  + ".zip");
         ZipOutputStream zipOut = new ZipOutputStream(fos);
         allFiles.forEach(fajl -> {
             InputStream inputStream = new ByteArrayInputStream(fajl.getData());
@@ -480,13 +511,17 @@ public class NoteComponent extends VerticalLayout {
             }
             try {
                 inputStream.close();
-                System.out.println("first file zipped");
+                System.out.println("File zipped");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
     zipOut.close();
     fos.close();
-    System.out.println("Ziping finished");
+    System.out.println("Zipping finished");
+    }
+
+    protected void makeZipFromFilesOnFileSystem(List<Fajl> files){
+
     }
 }

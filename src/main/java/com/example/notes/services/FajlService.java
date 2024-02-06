@@ -7,10 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,10 +32,7 @@ public class FajlService {
         Fajl fajl1 = new Fajl();
         fajl1.setNote(note);
         fajl1.setFileName(fileName);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        fajl.transferTo(outputStream);
-        outputStream.close();
-        fajl1.setData(outputStream.toByteArray());
+        fajl1.setDataUsingInputStream(fajl);
         fajlRepository.save(fajl1);
     }
 
@@ -55,5 +49,14 @@ public class FajlService {
         return getNoteFiles(note).stream().filter(fajl ->  fileIds.contains(fajl.getFileId()));
     }
 
+    public void deleteFile(Fajl fajl) throws Exception {
+        File file = new File(fajl.getFilePath());
+         if (file.delete()){
+             this.fajlRepository.delete(fajl);
+         }
+        else {
+            throw new Exception("File - " + fajl.getFileName() +  " not deleted");
+         }
+    }
 
 }

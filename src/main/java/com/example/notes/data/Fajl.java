@@ -2,7 +2,8 @@ package com.example.notes.data;
 
 import jakarta.persistence.*;
 
-import javax.sql.rowset.serial.SerialBlob;
+import java.io.*;
+
 
 @Entity
 @Table(name="Fajl")
@@ -19,6 +20,15 @@ public class Fajl  {
     private byte[] data;
 
     private Long fileSize;
+    private String filePath;
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
     public void setFileId(Long fileId) {
         this.fileId = fileId;
@@ -40,7 +50,7 @@ public class Fajl  {
     public Fajl(String fileName, String fileType, byte[] data, Note note) {
         this.fileName = fileName;
         this.fileType = fileType;
-        this.data   = data;
+        this.data = data;
         this.note = note;
     }
 
@@ -51,6 +61,7 @@ public class Fajl  {
     public String getFileName() {
         return fileName;
     }
+
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
@@ -70,6 +81,21 @@ public class Fajl  {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public void setDataUsingInputStream(InputStream inputStream) throws IOException {
+        byte[] bytes = new byte[2048];
+        File file = new File(note.getNoteId().toString());
+        file.mkdir();
+        int length;
+        String filePath = file.getAbsoluteFile() + "/" + fileName;
+        FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+        setFilePath(filePath);
+        while ((length =  inputStream.read(bytes)) != -1){
+            fileOutputStream.write(bytes, 0, length);
+        }
+        inputStream.close();
+        fileOutputStream.close();
     }
 
     public Note getNote() {
