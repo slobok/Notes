@@ -3,10 +3,11 @@ package com.example.notes.data;
 import jakarta.persistence.*;
 
 import java.io.*;
+import java.sql.Blob;
 
 
 @Entity
-@Table(name="Fajl")
+@Table(name="file")
 public class Fajl  {
 
     @Id
@@ -16,11 +17,12 @@ public class Fajl  {
 
     private String fileName;
     private String fileType;
-    @Lob
-    private byte[] data;
-
     private Long fileSize;
     private String filePath;
+
+    @OneToOne(mappedBy = "fajl")
+    private FileContentDb fileContentDb;
+
 
     public String getFilePath() {
         return filePath;
@@ -30,9 +32,6 @@ public class Fajl  {
         this.filePath = filePath;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
 
     public Long getFileSize() {
         return fileSize;
@@ -46,11 +45,20 @@ public class Fajl  {
     @JoinColumn(name="noteId")
     private Note note;
 
+    public FileContentDb getFileContentDb() {
+        return fileContentDb;
+    }
+
+    public void setFileContentDb(FileContentDb fileContentDb) {
+        this.fileContentDb = fileContentDb;
+    }
+
     public Fajl(){}
-    public Fajl(String fileName, String fileType, byte[] data, Note note) {
+
+    public Fajl(String fileName, String fileType, Long fileSize, Note note) {
         this.fileName = fileName;
         this.fileType = fileType;
-        this.data = data;
+        this.fileSize = fileSize;
         this.note = note;
     }
 
@@ -75,13 +83,6 @@ public class Fajl  {
         this.fileType = fileType;
     }
 
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
-    }
 
     public void setDataUsingInputStream(InputStream inputStream) throws IOException {
         byte[] bytes = new byte[2048];

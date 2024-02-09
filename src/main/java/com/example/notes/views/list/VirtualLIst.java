@@ -1,7 +1,10 @@
 package com.example.notes.views.list;
 
 import com.example.notes.data.Note;
+import com.example.notes.repository.FileContentDbRepository;
 import com.example.notes.services.FajlService;
+import com.example.notes.services.FileContentService;
+import com.example.notes.services.Helper.LobHelper;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
@@ -14,6 +17,8 @@ import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
+import org.codehaus.plexus.archiver.FinalizerEnabled;
+import org.hibernate.SessionFactory;
 
 
 import java.util.ArrayList;
@@ -25,10 +30,12 @@ public class VirtualLIst extends Div {
     private final NoteService noteService;
     private final LabelService labelService;
     private final FajlService fajlService;
-    public VirtualLIst(NoteService noteService, LabelService labelService, FajlService fajlService){
+    private final FileContentService fileContentService;
+    public VirtualLIst(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService){
         this.noteService = noteService;
         this.labelService = labelService;
         this.fajlService = fajlService;
+        this.fileContentService = fileContentService;
         List<Note> noteList = noteService.getAllNotes("");
 
 
@@ -50,7 +57,7 @@ public class VirtualLIst extends Div {
             Div div = new Div();
             div.setWidth("100%");
             notes.forEach(note -> {
-                div.add(new NoteComponent(note, noteService, labelService, fajlService));
+                div.add(new NoteComponent(note, noteService, labelService, fajlService, sessionFactory, fileContentService));
             });
             return div;
         }

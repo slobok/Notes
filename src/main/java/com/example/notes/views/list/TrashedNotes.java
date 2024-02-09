@@ -1,6 +1,7 @@
 package com.example.notes.views.list;
 import com.example.notes.data.Note;
 import com.example.notes.services.FajlService;
+import com.example.notes.services.FileContentService;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.note.NoteInTrash;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 
@@ -23,8 +25,8 @@ public class TrashedNotes extends NotesList  {
     ListDataProvider <List<Note>> listDataProvider;
 
 
-    TrashedNotes(NoteService noteService, LabelService labelService, FajlService fajlService)  {
-        super(noteService, labelService, fajlService);
+    TrashedNotes(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService){
+        super(noteService, labelService, fajlService, sessionFactory, fileContentService);
         // todo message potreban na svakoj strani, postavi na provoj
     }
     @Override
@@ -79,6 +81,6 @@ public class TrashedNotes extends NotesList  {
 
     @Override
     protected void setNoteType(Note note, Div div) {
-        div.add(new NoteInTrash(note, noteService, labelService, fajlService));
+        div.add(new NoteInTrash(note, noteService, labelService, fajlService,sessionFactory, fileContentService ));
     }
 }

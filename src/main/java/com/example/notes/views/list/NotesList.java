@@ -1,6 +1,9 @@
 package com.example.notes.views.list;
 import com.example.notes.data.Note;
+import com.example.notes.repository.FileContentDbRepository;
 import com.example.notes.services.FajlService;
+import com.example.notes.services.FileContentService;
+import com.example.notes.services.Helper.LobHelper;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
@@ -24,6 +27,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
+import org.hibernate.SessionFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +38,7 @@ public class NotesList extends VerticalLayout  {
     protected NoteService noteService;
     protected LabelService labelService;
     protected FajlService fajlService;
+    protected LobHelper lobHelper;
     private TextField search = new TextField();
     protected H3 message;
     NotesContainer notesContainer;
@@ -43,10 +49,14 @@ public class NotesList extends VerticalLayout  {
     List<List<Note>> listOfOtherNotesList;
     List<Note> allNotes;
     List<Note> selectedNotes = new LinkedList<>();
-    NotesList(NoteService noteService, LabelService labelService, FajlService fajlService) {
+    protected final SessionFactory sessionFactory;
+    protected final FileContentService fileContentService;
+    NotesList(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService) {
         this.labelService = labelService;
         this.noteService = noteService;
         this.fajlService = fajlService;
+        this.sessionFactory = sessionFactory;
+        this.fileContentService = fileContentService;
         createMessage();
         addComponentsToPage();
         addListeners();
@@ -175,7 +185,7 @@ public class NotesList extends VerticalLayout  {
     }
 
     protected void setNoteType(Note note, Div div) {
-        div.add(new NoteComponent(note, noteService, labelService, fajlService));
+        div.add(new NoteComponent(note, noteService, labelService, fajlService, sessionFactory, fileContentService));
     }
 
     protected static List<List<Note>> makeListsOfList(List<Note> pinnedNotes) {

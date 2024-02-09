@@ -1,9 +1,12 @@
 package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Fajl;
+import com.example.notes.data.FileContentDb;
 import com.example.notes.data.Label;
 import com.example.notes.data.Note;
+import com.example.notes.repository.FileContentDbRepository;
 import com.example.notes.services.FajlService;
+import com.example.notes.services.FileContentService;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.events.CountingNotesEvent;
@@ -32,13 +35,18 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileBuffer;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.server.StreamResource;
+import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 
 
 import java.io.*;
@@ -63,18 +71,22 @@ public class NoteComponent extends VerticalLayout {
     private Component multiSelectLComboBox;
     private HorizontalLayout chooseColor;
     protected boolean selected = false;
-    public NoteComponent(Note note, NoteService noteService, LabelService labelService, FajlService fajlService){
+    private final SessionFactory sessionFactory;
+    private final FileContentService fileContentService;
+    public NoteComponent(Note note, NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory,FileContentService fileContentService){
         this.noteService = noteService;
         this.labelService = labelService;
         this.note = note;
         this.fajlService = fajlService;
+        this.sessionFactory = sessionFactory;
+        this.fileContentService = fileContentService;
         stylingThisComponent();
         this.noteMenu = createNoteMenu();
         // this.multiSelectLComboBox = makeLabelBox();
         this.chooseColor  = new HorizontalLayout(setNotesBackgroundColor());
         updateNote();
         setTextSaveMode();
-        this.add(noteHeader, notesText ,noteMenu, chooseColor, fileInput(),downlaodLinksForFile());
+        this.add(noteHeader, notesText ,noteMenu, chooseColor, uploadFiles(), fileInput());
         this.addDoubleClickListener(event -> {
             selectUnselect();
         });
@@ -272,7 +284,7 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getNoteId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, noteMenu, chooseColor, fileInput(),downlaodLinksForFile());
+        this.add(noteHeader, notesText, noteMenu, chooseColor, fileInput());
     }
     //Field for selecting labels
     private Component makeLabelBox(){
@@ -347,26 +359,57 @@ public class NoteComponent extends VerticalLayout {
         notification.setPosition(position);
     }
 
+    public Button uploadFiles(){
+        Button uploadFiles = new Button(VaadinIcon.FILE_O.create());
+
+        uploadFiles.addClickListener(buttonClickEvent -> {
+            try {
+                generateHugeNumberOfFiles();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return uploadFiles;
+    }
+
+
+    protected void generateHugeNumberOfFiles() throws FileNotFoundException {
+        File file  = new File("D:\\Slobo\\NotesApp\\Notes\\Zbirka zadataka.pdf");
+        ArrayList<InputStream> inputStreams = new ArrayList<>();
+        int number = 10000;
+        for (int i = 0; i < number; ++i){
+            inputStreams.add(new FileInputStream(file));
+       }
+
+        for(InputStream inputStream : inputStreams) {
+            Fajl fajl = new Fajl();
+            fajl.setFileName("File name");
+            fajl.setNote(note);
+            fajl.setFileSize(file.getTotalSpace());
+            this.fajlService.saveFileAndFileData(fajl, inputStream,file.getTotalSpace());
+        }
+    }
+
     protected HorizontalLayout fileInput(){
-    //    MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
+
         MultiFileBuffer multiFileBuffer  = new MultiFileBuffer();
-
         Upload upload = new Upload(multiFileBuffer);
-
-
         upload.setMaxFileSize(2000000000);
         upload.addSucceededListener(event -> {
             InputStream fileData = multiFileBuffer.getInputStream(event.getFileName());
 
+            Fajl fajl = new Fajl(event.getFileName(), event.getMIMEType(), event.getContentLength(), note);
+            this.fajlService.saveFileAndFileData(fajl, fileData, event.getContentLength());
+
             // Saving file on filesystem
 
-            try {
+            /*  try {
                 this.fajlService.saveFile(fileData, note, event.getFileName());
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
 
-            // Uncomment to save file in to Database in format of arrayBytes
+            // Saving file in to Database in format of arrayBytes using MultiPart
 
             /*   try {
 
@@ -385,7 +428,7 @@ public class NoteComponent extends VerticalLayout {
         return new HorizontalLayout(upload);
     }
 
-    protected HorizontalLayout downlaodLinksForFile(){
+/*   protected HorizontalLayout downlaodLinksForFile(){
         Button button = new Button(VaadinIcon.FILE.create());
         HorizontalLayout hlForLinks = new HorizontalLayout();
         button.addClickListener(event -> {
@@ -393,10 +436,9 @@ public class NoteComponent extends VerticalLayout {
         });
         hlForLinks.add(button);
         return  hlForLinks;
-    }
+    }*/
 
-
-    protected Dialog makeNewDialog(){
+/*    protected Dialog makeNewDialog(){
         Dialog dialog = new Dialog();
         Grid<Fajl> grid = new Grid<>(Fajl.class,false);
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -442,9 +484,9 @@ public class NoteComponent extends VerticalLayout {
 
         dialog.add(downloadButton, deleteSelectedFiles);
         return dialog;
-    }
+    }*/
 
-    protected Dialog makeDialog(){
+  /*  protected Dialog makeDialog(){
         Dialog dialog = new Dialog();
         Button closeDialog = new Button(VaadinIcon.CLOSE.create());
         closeDialog.getStyle().setFloat(Style.FloatCss.RIGHT);
@@ -481,11 +523,13 @@ public class NoteComponent extends VerticalLayout {
         });
         dialog.add(new HorizontalLayout(downloadSelected));
         return dialog;
-    }
+    }*/
 
-    protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
+   /* protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
         FileOutputStream fos = new FileOutputStream("Note " + note.getNoteId()  + ".zip");
+
         ZipOutputStream zipOut = new ZipOutputStream(fos);
+
         allFiles.forEach(fajl -> {
             InputStream inputStream = new ByteArrayInputStream(fajl.getData());
             ZipEntry zipEntry = new ZipEntry(fajl.getFileName());
@@ -504,7 +548,6 @@ public class NoteComponent extends VerticalLayout {
                 }
                 try {
                     zipOut.write(bytes, 0, length);
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -519,9 +562,12 @@ public class NoteComponent extends VerticalLayout {
     zipOut.close();
     fos.close();
     System.out.println("Zipping finished");
-    }
+    }*/
 
-    protected void makeZipFromFilesOnFileSystem(List<Fajl> files){
+   /* protected void makeZipFromFilesOnFileSystem(List<Fajl> selectedFiles){
+        this.fajlService.getNoteFiles(note).forEach(fajl -> {
 
-    }
+        });
+
+    }*/
 }

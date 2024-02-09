@@ -1,7 +1,10 @@
 package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Note;
+import com.example.notes.repository.FileContentDbRepository;
 import com.example.notes.services.FajlService;
+import com.example.notes.services.FileContentService;
+import com.example.notes.services.Helper.LobHelper;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.events.CountingNotesEvent;
@@ -11,10 +14,11 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.hibernate.SessionFactory;
 
 public class NoteInTrash extends  NoteComponent{
-    public NoteInTrash(Note note, NoteService noteService, LabelService labelService, FajlService fajlService) {
-        super(note, noteService,labelService, fajlService);
+    public NoteInTrash(Note note, NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactor, FileContentService fileContentService) {
+        super(note, noteService,labelService, fajlService, sessionFactor, fileContentService);
     }
 
     @Override
