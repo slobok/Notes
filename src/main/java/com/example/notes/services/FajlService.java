@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -55,6 +56,10 @@ public class FajlService {
         return this.fajlRepository.findByNote(note);
     }
 
+    public List<FileContentDb> getFileContentents(Note note){
+        return getNoteFiles(note).stream().map(Fajl::getFileContentDb).collect(Collectors.toList());
+    }
+
     public Stream<Fajl> getFilesByIdAndNote(List<Long> fileIds, Note note) {
         return getNoteFiles(note).stream().filter(fajl -> fileIds.contains(fajl.getFileId()));
     }
@@ -83,4 +88,6 @@ public class FajlService {
     public void saveAll(List<Fajl> fajls) {
         this.fajlRepository.saveAll(fajls);
     }
+
+
 }

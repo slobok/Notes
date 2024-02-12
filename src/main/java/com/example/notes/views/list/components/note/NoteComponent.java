@@ -50,6 +50,7 @@ import org.springframework.scheduling.annotation.Async;
 
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,11 +87,16 @@ public class NoteComponent extends VerticalLayout {
         this.chooseColor  = new HorizontalLayout(setNotesBackgroundColor());
         updateNote();
         setTextSaveMode();
-        this.add(noteHeader, notesText ,noteMenu, chooseColor, uploadFiles(), fileInput());
+        addComponentsToNote();
         this.addDoubleClickListener(event -> {
             selectUnselect();
         });
     }
+
+    private void addComponentsToNote() {
+        this.add(noteHeader, notesText ,noteMenu, chooseColor, uploadFiles(), fileInput(),downlaodLinksForFile());
+    }
+
     // to do popravi funkciju
     private void selectUnselect() {
         ComponentUtil.fireEvent(UI.getCurrent(),new SelectNoteEvent(this, false, note.getNoteId()));
@@ -284,7 +290,7 @@ public class NoteComponent extends VerticalLayout {
         this.note = this.noteService.findById(note.getNoteId());
         updateNote();
         this.removeAll();
-        this.add(noteHeader, notesText, noteMenu, chooseColor, fileInput());
+        addComponentsToNote();
     }
     //Field for selecting labels
     private Component makeLabelBox(){
@@ -400,6 +406,8 @@ public class NoteComponent extends VerticalLayout {
 
             Fajl fajl = new Fajl(event.getFileName(), event.getMIMEType(), event.getContentLength(), note);
             this.fajlService.saveFileAndFileData(fajl, fileData, event.getContentLength());
+            // todo Obavezno save file and data, Proslijedi funkciji nesto a onda neka ona poziva drugu f - ju
+
 
             // Saving file on filesystem
 
@@ -428,17 +436,17 @@ public class NoteComponent extends VerticalLayout {
         return new HorizontalLayout(upload);
     }
 
-/*   protected HorizontalLayout downlaodLinksForFile(){
+   protected HorizontalLayout downlaodLinksForFile(){
         Button button = new Button(VaadinIcon.FILE.create());
         HorizontalLayout hlForLinks = new HorizontalLayout();
         button.addClickListener(event -> {
-            makeNewDialog().open();
+            makeDialog().open();
         });
         hlForLinks.add(button);
         return  hlForLinks;
-    }*/
+    }
 
-/*    protected Dialog makeNewDialog(){
+  /*  protected Dialog makeNewDialog(){
         Dialog dialog = new Dialog();
         Grid<Fajl> grid = new Grid<>(Fajl.class,false);
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
@@ -486,7 +494,7 @@ public class NoteComponent extends VerticalLayout {
         return dialog;
     }*/
 
-  /*  protected Dialog makeDialog(){
+    protected Dialog makeDialog(){
         Dialog dialog = new Dialog();
         Button closeDialog = new Button(VaadinIcon.CLOSE.create());
         closeDialog.getStyle().setFloat(Style.FloatCss.RIGHT);
@@ -499,10 +507,18 @@ public class NoteComponent extends VerticalLayout {
         VerticalLayout layoutLinks = new VerticalLayout();
         List<Fajl>  noteFiles = fajlService.getNoteFiles(note);
         noteFiles.forEach(fajl -> {
-            InputStream inputStream = new ByteArrayInputStream(fajl.getData());
+            InputStream inputStream = null;
+            FileContentDb fileContentDb = this.fileContentService.getFileContentByID(fajl.getFileId());
+            try {
+                inputStream = fileContentDb.getData().getBinaryStream();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
             // todo Neka tu bude samo link a onda kada pritisnem na fajl neka krene download dovlacenje iz baze i download
 
-            Anchor anchor = new Anchor(new StreamResource(fajl.getFileName() , () -> inputStream)
+            InputStream finalInputStream = inputStream;
+            Anchor anchor = new Anchor(new StreamResource(fajl.getFileName() , () -> finalInputStream)
                                     , fajl.getFileName() );
 
             anchor.getElement().getThemeList().add("primary");
@@ -523,15 +539,20 @@ public class NoteComponent extends VerticalLayout {
         });
         dialog.add(new HorizontalLayout(downloadSelected));
         return dialog;
-    }*/
+    }
 
-   /* protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
+    protected void makeZipFromFiles(List<Fajl> allFiles) throws IOException {
         FileOutputStream fos = new FileOutputStream("Note " + note.getNoteId()  + ".zip");
 
         ZipOutputStream zipOut = new ZipOutputStream(fos);
 
         allFiles.forEach(fajl -> {
-            InputStream inputStream = new ByteArrayInputStream(fajl.getData());
+            InputStream inputStream = null;
+            try {
+                inputStream = this.fileContentService.getFileContentByID(fajl.getFileId()).getData().getBinaryStream();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             ZipEntry zipEntry = new ZipEntry(fajl.getFileName());
             try {
                 zipOut.putNextEntry(zipEntry);
@@ -562,7 +583,7 @@ public class NoteComponent extends VerticalLayout {
     zipOut.close();
     fos.close();
     System.out.println("Zipping finished");
-    }*/
+    }
 
    /* protected void makeZipFromFilesOnFileSystem(List<Fajl> selectedFiles){
         this.fajlService.getNoteFiles(note).forEach(fajl -> {

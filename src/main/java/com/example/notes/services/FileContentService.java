@@ -1,5 +1,6 @@
 package com.example.notes.services;
 
+import com.example.notes.data.Fajl;
 import com.example.notes.data.FileContentDb;
 import com.example.notes.repository.FileContentDbRepository;
 import org.hibernate.Session;
@@ -7,7 +8,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.sql.Blob;
+
+
 @Service
 public class FileContentService {
 
@@ -31,9 +33,14 @@ public class FileContentService {
         return fileContentDb;
     }
 
-    public void saveFileContent(Blob data){
-        FileContentDb fileContent = new FileContentDb();
-        fileContent.setData(data);
-        fileContentDbRepository.save(fileContent);
+    public FileContentDb getFileContent(Fajl fajl){
+        return this.fileContentDbRepository.findByFajl(fajl)
+                .orElseThrow(() -> new RuntimeException("Not found file content for" + fajl.getFileName()));
     }
+
+    public FileContentDb getFileContentByID(Long fileId){
+        return this.fileContentDbRepository.findById(fileId)
+                .orElseThrow(() ->  new RuntimeException("Not found contend db"));
+    }
+
 }

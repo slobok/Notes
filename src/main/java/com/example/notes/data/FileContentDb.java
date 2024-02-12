@@ -13,7 +13,7 @@ public class FileContentDb {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "label_id")
+    @Column(name = "id")
     private Long id;
 
     @Lob

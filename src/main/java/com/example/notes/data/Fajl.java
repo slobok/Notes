@@ -3,7 +3,6 @@ package com.example.notes.data;
 import jakarta.persistence.*;
 
 import java.io.*;
-import java.sql.Blob;
 
 
 @Entity
@@ -21,6 +20,7 @@ public class Fajl  {
     private String filePath;
 
     @OneToOne(mappedBy = "fajl")
+    @JoinColumn(name="content_id")
     private FileContentDb fileContentDb;
 
 
