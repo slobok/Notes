@@ -1,14 +1,11 @@
 package com.example.notes.views.list;
 
 import com.example.notes.data.Note;
-import com.example.notes.repository.FileContentDbRepository;
-import com.example.notes.services.FajlService;
-import com.example.notes.services.FileContentService;
-import com.example.notes.services.Helper.LobHelper;
-import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
 import com.example.notes.views.list.components.note.NoteComponent;
+import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
+import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -17,8 +14,6 @@ import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
-import org.codehaus.plexus.archiver.FinalizerEnabled;
-import org.hibernate.SessionFactory;
 
 
 import java.util.ArrayList;
@@ -28,14 +23,12 @@ import java.util.List;
 public class VirtualLIst extends Div {
 
     private final NoteService noteService;
-    private final LabelService labelService;
-    private final FajlService fajlService;
-    private final FileContentService fileContentService;
-    public VirtualLIst(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService){
+    private final NoteComponents noteComponents;
+    private final NoteClickListeners noteClickListeners;
+    public VirtualLIst(NoteService noteService, NoteComponents noteComponents, NoteClickListeners noteClickListeners){
         this.noteService = noteService;
-        this.labelService = labelService;
-        this.fajlService = fajlService;
-        this.fileContentService = fileContentService;
+        this.noteComponents = noteComponents;
+        this.noteClickListeners = noteClickListeners;
         List<Note> noteList = noteService.getAllNotes("");
 
 
@@ -57,7 +50,7 @@ public class VirtualLIst extends Div {
             Div div = new Div();
             div.setWidth("100%");
             notes.forEach(note -> {
-                div.add(new NoteComponent(note, noteService, labelService, fajlService, sessionFactory, fileContentService));
+                div.add(new NoteComponent(note, noteComponents, noteClickListeners));
             });
             return div;
         }

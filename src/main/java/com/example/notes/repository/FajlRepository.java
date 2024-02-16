@@ -14,5 +14,4 @@ public interface FajlRepository extends JpaRepository<Fajl, Long> {
 
     List<Fajl> findByNote(Note note);
 
-
 }

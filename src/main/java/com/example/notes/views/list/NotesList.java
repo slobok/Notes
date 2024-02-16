@@ -1,15 +1,13 @@
 package com.example.notes.views.list;
 import com.example.notes.data.Note;
-import com.example.notes.repository.FileContentDbRepository;
-import com.example.notes.services.FajlService;
-import com.example.notes.services.FileContentService;
-import com.example.notes.services.Helper.LobHelper;
-import com.example.notes.services.LabelService;
+
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
 import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.PaginationComp;
 import com.example.notes.views.list.components.note.NoteComponent;
+import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
+import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
@@ -27,7 +25,6 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
-import org.hibernate.SessionFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -35,10 +32,7 @@ import java.util.List;
 
 @Route(value = "", layout = MainLayout.class)
 public class NotesList extends VerticalLayout  {
-    protected NoteService noteService;
-    protected LabelService labelService;
-    protected FajlService fajlService;
-    protected LobHelper lobHelper;
+
     private TextField search = new TextField();
     protected H3 message;
     NotesContainer notesContainer;
@@ -49,14 +43,14 @@ public class NotesList extends VerticalLayout  {
     List<List<Note>> listOfOtherNotesList;
     List<Note> allNotes;
     List<Note> selectedNotes = new LinkedList<>();
-    protected final SessionFactory sessionFactory;
-    protected final FileContentService fileContentService;
-    NotesList(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService) {
-        this.labelService = labelService;
+
+    protected final NoteService noteService;
+    protected final NoteComponents noteComponents;
+    protected final NoteClickListeners noteClickListeners;
+    NotesList(NoteService noteService, NoteComponents noteComponents, NoteClickListeners noteClickListeners) {
         this.noteService = noteService;
-        this.fajlService = fajlService;
-        this.sessionFactory = sessionFactory;
-        this.fileContentService = fileContentService;
+        this.noteComponents = noteComponents;
+        this.noteClickListeners = noteClickListeners;
         createMessage();
         addComponentsToPage();
         addListeners();
@@ -185,7 +179,7 @@ public class NotesList extends VerticalLayout  {
     }
 
     protected void setNoteType(Note note, Div div) {
-        div.add(new NoteComponent(note, noteService, labelService, fajlService, sessionFactory, fileContentService));
+        div.add(new NoteComponent(note, noteComponents, noteClickListeners));
     }
 
     protected static List<List<Note>> makeListsOfList(List<Note> pinnedNotes) {

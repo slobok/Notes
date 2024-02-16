@@ -2,7 +2,6 @@ package com.example.notes.views.list.events;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
-import org.w3c.dom.events.Event;
 
 public class NoteCreatedEvent extends ComponentEvent<Component> {
     /**

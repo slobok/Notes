@@ -4,10 +4,7 @@ import com.example.notes.data.Fajl;
 import com.example.notes.data.FileContentDb;
 import com.example.notes.data.Note;
 import com.example.notes.repository.FajlRepository;
-import com.example.notes.repository.FileContentDbRepository;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
-
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,16 +14,12 @@ import java.util.stream.Stream;
 public class FajlService {
 
     private final FajlRepository fajlRepository;
-    private final FileContentDbRepository fileContentDbRepository;
     private final FileContentService fileContentService;
-    private final SessionFactory sessionFactory;
-    public FajlService(FajlRepository fajlRepository, FileContentDbRepository fileContentDbRepository, FileContentService fileContentService, SessionFactory sessionFactory) {
+    public FajlService(FajlRepository fajlRepository,FileContentService fileContentService) {
         this.fajlRepository = fajlRepository;
-        this.fileContentDbRepository = fileContentDbRepository;
         this.fileContentService = fileContentService;
-        this.sessionFactory = sessionFactory;
-    }
 
+    }
 
  /*   public void saveFileToDB(MultipartFile multipartFile, Note note) throws Exception{
         Fajl file = new Fajl();
@@ -88,6 +81,5 @@ public class FajlService {
     public void saveAll(List<Fajl> fajls) {
         this.fajlRepository.saveAll(fajls);
     }
-
 
 }

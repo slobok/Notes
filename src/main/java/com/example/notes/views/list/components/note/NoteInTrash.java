@@ -1,53 +1,38 @@
 package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Note;
-import com.example.notes.repository.FileContentDbRepository;
-import com.example.notes.services.FajlService;
-import com.example.notes.services.FileContentService;
-import com.example.notes.services.Helper.LobHelper;
-import com.example.notes.services.LabelService;
-import com.example.notes.services.NoteService;
-import com.example.notes.views.list.events.CountingNotesEvent;
-import com.vaadin.flow.component.ComponentUtil;
-import com.vaadin.flow.component.UI;
+import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
+import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import org.hibernate.SessionFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NoteInTrash extends  NoteComponent{
-    public NoteInTrash(Note note, NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactor, FileContentService fileContentService) {
-        super(note, noteService,labelService, fajlService, sessionFactor, fileContentService);
+    public NoteInTrash(Note note, NoteComponents noteComponents, NoteClickListeners noteClickListeners) {
+        super(note, noteComponents, noteClickListeners);
     }
 
     @Override
-    protected void addButtonsToNoteMenu(HorizontalLayout noteMenu) {
-        noteMenu.add(
-                getRestoreButton(),
-                getDeleteButton()
-        );
+    protected void addButtons() {
+        super.addButtonsToNoteMenu(new ArrayList<Button>(List.of(getRestoreButton(), getDeleteButton())));
     }
-
 
     private Button getRestoreButton() {
         Button restore = new Button(new Icon("arrows-long-up"));
         restore.setTooltipText("Restore note");
         restore.addClickListener(klik -> {
-            this.noteService.restoreNote(note.getNoteId());
-            ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this,false));
-            makeNotification("Note restored",1200, Notification.Position.BOTTOM_START);
+            noteClickListeners.RestoreButtonListenerFun(note);
         });
         return restore;
     }
 
-    private Button getDeleteButton() {
+    private Button getDeleteButton( ) {
         Button deleteButton = new Button(new Icon("close"));
         deleteButton.setTooltipText("Delete note");
         deleteButton.addClickListener(click -> {
-            this.noteService.deleteNote(note);
-            ComponentUtil.fireEvent(UI.getCurrent(),new CountingNotesEvent(this,false));
-            makeNotification("Note deleted",1200, Notification.Position.BOTTOM_START);
+            noteClickListeners.deleteTrashListener(note);
         });
         return deleteButton;
     }

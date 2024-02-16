@@ -1,6 +1,5 @@
 package com.example.notes.views.list.components.mainlayout;
 
-import com.example.notes.views.list.components.NotesContainer;
 import com.vaadin.flow.component.html.Span;
 
 public class NotesCounter extends Span {

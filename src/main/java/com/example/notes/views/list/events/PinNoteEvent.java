@@ -1,10 +1,7 @@
 package com.example.notes.views.list.events;
 
-import com.example.notes.views.list.components.note.NoteComponent;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.textfield.TextField;
 
 public class PinNoteEvent extends ComponentEvent<Button>{
     /**

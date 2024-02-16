@@ -1,11 +1,8 @@
 package com.example.notes.views.list.events;
 
 
-import com.example.notes.data.Note;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEvent;
-
-import java.util.List;
+import com.vaadin.flow.component.ComponentEvent;;
 
 public class SelectNoteEvent extends ComponentEvent<Component> {
     private Long noteId;

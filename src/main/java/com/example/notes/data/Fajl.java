@@ -19,11 +19,6 @@ public class Fajl  {
     private Long fileSize;
     private String filePath;
 
-    @OneToOne(mappedBy = "fajl")
-    @JoinColumn(name="content_id")
-    private FileContentDb fileContentDb;
-
-
     public String getFilePath() {
         return filePath;
     }
@@ -31,6 +26,10 @@ public class Fajl  {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
+
+    @OneToOne(mappedBy = "fajl")
+    @JoinColumn(name="content_id")
+    private FileContentDb fileContentDb;
 
 
     public Long getFileSize() {
@@ -91,7 +90,6 @@ public class Fajl  {
         int length;
         String filePath = file.getAbsoluteFile() + "/" + fileName;
         FileOutputStream fileOutputStream = new FileOutputStream(filePath);
-        setFilePath(filePath);
         while ((length =  inputStream.read(bytes)) != -1){
             fileOutputStream.write(bytes, 0, length);
         }

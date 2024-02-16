@@ -1,33 +1,29 @@
 package com.example.notes.views.list;
 
 import com.example.notes.data.Label;
-import com.example.notes.repository.FileContentDbRepository;
-import com.example.notes.services.FajlService;
-import com.example.notes.services.FileContentService;
 import com.example.notes.services.LabelService;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.note.NoteComponent;
+import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
+import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import org.hibernate.SessionFactory;
 
 @Route(value = "note/:label?", layout = MainLayout.class)
 public class LabeledNotes extends Div implements BeforeEnterObserver {
     public String labelName;
     private final LabelService labelService;
     private final NoteService noteService;
-    private final FajlService fajlService;
-    private final SessionFactory sessionFactory;
-    private  final FileContentService fileContentService;
-    LabeledNotes(NoteService noteService, LabelService labelService, FajlService fajlService, SessionFactory sessionFactory, FileContentService fileContentService) {
+    private final NoteComponents noteComponents;
+    private final NoteClickListeners noteClickListeners;
+    LabeledNotes(NoteService noteService, LabelService labelService, NoteComponents noteComponents, NoteClickListeners noteClickListeners1) {
         this.noteService = noteService;
         this.labelService = labelService;
-        this.fajlService = fajlService;
-        this.sessionFactory = sessionFactory;
-        this.fileContentService = fileContentService;
+        this.noteComponents = noteComponents;
+        this.noteClickListeners = noteClickListeners1;
     }
 
 
@@ -37,7 +33,7 @@ public class LabeledNotes extends Div implements BeforeEnterObserver {
         System.out.println(label.getName());
         noteService.getNotesByLabel(label).forEach(note -> {
             System.out.println(note.getText());
-            notesContainer.add(new NoteComponent(note, noteService, labelService, fajlService, sessionFactory, fileContentService));
+            notesContainer.add(new NoteComponent(note, noteComponents, noteClickListeners));
         });
         return new VerticalLayout(notesContainer);
     }
