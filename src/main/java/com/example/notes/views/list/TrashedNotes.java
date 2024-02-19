@@ -2,7 +2,7 @@ package com.example.notes.views.list;
 import com.example.notes.data.Note;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
-import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
+import com.example.notes.views.list.components.note.NoteEvents.NotesComponents;
 import com.example.notes.views.list.components.note.NoteInTrash;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.vaadin.flow.component.ComponentUtil;
@@ -16,13 +16,12 @@ import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
 import java.util.List;
 
-@Route(value = "trash",layout = MainLayout.class)
+@Route(value = "trash", layout = MainLayout.class)
 public class TrashedNotes extends NotesList  {
     List <List<Note>> listofNotesLists;
     ListDataProvider <List<Note>> listDataProvider;
 
-
-    TrashedNotes(NoteService noteService, NoteComponents noteComponents, NoteClickListeners noteClickListeners){
+    TrashedNotes(NoteService noteService, NotesComponents noteComponents, NoteClickListeners noteClickListeners){
         super(noteService ,noteComponents, noteClickListeners);
         // todo message potreban na svakoj strani, postavi na provoj
     }

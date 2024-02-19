@@ -23,7 +23,6 @@ public class NotesGeneratorComp extends Div {
 
     public void setNumberField(){
         numberField = new NumberField("Number of notes to generate");
-
     }
 
     public void setAddNotesButton() {
@@ -33,6 +32,7 @@ public class NotesGeneratorComp extends Div {
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this, false));
         });
     }
+
     public void setDeleteButton(){
         deleteButton = new Button("Delete all");
         deleteButton.addClickListener(event -> {
@@ -40,5 +40,4 @@ public class NotesGeneratorComp extends Div {
             ComponentUtil.fireEvent(UI.getCurrent(), new CountingNotesEvent(this, false));
         });
     }
-
 }

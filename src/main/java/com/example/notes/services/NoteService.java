@@ -7,6 +7,7 @@ import com.example.notes.repository.NoteRepository;
 import com.example.notes.exceptions.ErrorCode;
 import com.example.notes.exceptions.NotesAppException;
 import com.github.javafaker.Faker;
+import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,10 @@ import java.util.*;
 public class NoteService {
     private final NoteRepository noteRepository;
     private final LabelRepository labelRepository;
-    private final LabelService labelService;
-    public NoteService(NoteRepository noteRepository, LabelRepository labelRepository, LabelService labelService) {
 
+    public NoteService(NoteRepository noteRepository, LabelRepository labelRepository, LabelService labelService) {
         this.noteRepository = noteRepository;
         this.labelRepository = labelRepository;
-        this.labelService = labelService;
     }
 
     public List<Note> getAll() {
@@ -42,20 +41,6 @@ public class NoteService {
         optionalNote.get().setLabel(new ArrayList<>(List.of(optionalLabel.get())));
         optionalLabel.get().getLabeledNotes().add(optionalNote.get());
         this.noteRepository.save(optionalNote.get());
-    }
-
-    @Transactional
-    public void addLabelsToNote(Note note, List<Label> labelsSet) {
-        Note note1 = this.noteRepository.findById(note.getNoteId()).
-                orElseThrow(() -> new IllegalArgumentException("Not found note with id " + note.getNoteId()));
-
-        note1.setLabel(labelsSet);
-        labelsSet.forEach(label -> {
-            Label l = this.labelRepository.findById(label.getLabelId())
-                    .orElseThrow(() -> new IllegalArgumentException("Not found label with id " + label.getLabelId()));
-            l.getLabeledNotes().add(note1);
-        });
-        this.noteRepository.save(note1);
     }
 
     @Transactional
@@ -226,26 +211,57 @@ public class NoteService {
                 .orElseThrow(() -> new IllegalStateException("Note with id:" + noteId + "not found"));
         return new ArrayList<>(note.getLabel());
     }
-
-    @Transactional
+    
     public void addManyNotesToDatabase(Integer numberOfNotes){
         for(int i = 0; i < numberOfNotes; i++){
             Faker faker = new Faker();
+            ArrayList<Label> labelList = new ArrayList<>();
+            Note note = new  Note(
+                    faker.animal().name(),
+                    faker.lorem().characters(40),
+                    1L,
+                    faker.color().name());
+            String labelName = faker.book().title();
+            while (labelRepository.findByName(labelName).isPresent()){
+                labelName = faker.book().title();
+            }
+            Label label = new Label(labelName);
+            note.setLabel(new ArrayList<>(List.of(label)));
+            label.setLabeledNotes(new ArrayList<>(new ArrayList<>(List.of(note))));
+            labelRepository.save(label);
+            noteRepository.save(note);
 
-            Note note = noteRepository.save(new Note(
+  /*          Note note = noteRepository.save(new Note(
                     faker.animal().name(),
                     faker.lorem().characters(40),
                     1L,
                     faker.color().name()));
                     Label label  = labelRepository.save(new Label(faker.book().title()));
                     Label label2 = labelRepository.findById(label.getLabelId())
-                                    .orElseThrow(()->  new IllegalArgumentException("Note found label"));
-                    Note note2 = noteRepository.findById(note.getNoteId())
-                                    .orElseThrow(() -> new IllegalArgumentException("Not found note"));
-                    List <Label> labelList = new ArrayList<>(List.of(label2));
-                    addLabelsToNote(note2, labelList);
-        }
+                                    .orElseThrow(()->  new IllegalArgumentException("Not found label"));
+                    note.getLabel().add(label2);
+                    label2.getLabeledNotes().add(note);
+                    labelList.add(label2);
+                    System.out.println("labelList" +  labelList);
 
+                    addLabelsToNote(note, labelList);*/
+        }
+    }
+
+    @Transactional
+    public void addLabelsToNote(Note note, List<Label> labels) {
+        Note note1 = this.noteRepository.findById(note.getNoteId()).
+                orElseThrow(() -> new IllegalArgumentException("Not found note with id " + note.getNoteId()));
+        note1.getLabel().addAll(labels);
+
+        labels.forEach(label -> {
+            Label l = this.labelRepository.findById(label.getLabelId())
+                    .orElseThrow(() -> new IllegalArgumentException("Not found label with id " + label.getLabelId()));
+            l.getLabeledNotes().add(note1);
+            labelRepository.save(l);
+            noteRepository.save(note1);
+        });
+        noteRepository.save(note1);
     }
 
     public List<Note> getNotesWithOffsetAndLimit(int offset,int limit){
@@ -260,13 +276,18 @@ public class NoteService {
             System.out.println(e.getMessage());
         }
     }
-
+    @Transactional
+    public void addLabelAndNote(Note note, String labelName){
+        Label label = labelRepository.findByName(labelName)
+                        .orElseThrow(() -> new IllegalArgumentException(""));
+        label.setLabeledNotes(new ArrayList<>(List.of(note)));
+        note.setLabel(new ArrayList<>(List.of(label)));
+        noteRepository.save(note);
+    }
 
     public  List<Note> getNotesByLabel(Label label){
         System.out.println(label.getName());
         System.out.println(new ArrayList<>(noteRepository.findByLabel(label)));
         return this.noteRepository.findByLabel(label);
     }
-
-
 }

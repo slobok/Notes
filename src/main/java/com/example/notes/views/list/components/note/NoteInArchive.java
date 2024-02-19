@@ -2,7 +2,7 @@ package com.example.notes.views.list.components.note;
 
 import com.example.notes.data.Note;
 import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
-import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
+import com.example.notes.views.list.components.note.NoteEvents.NotesComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.dom.Style;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteInArchive extends NoteComponent{
-    public NoteInArchive(Note note, NoteComponents noteComponents, NoteClickListeners noteClickListeners) {
+    public NoteInArchive(Note note, NotesComponents noteComponents, NoteClickListeners noteClickListeners) {
         super(note, noteComponents, noteClickListeners);
     }
 

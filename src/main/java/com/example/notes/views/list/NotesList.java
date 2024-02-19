@@ -7,7 +7,7 @@ import com.example.notes.views.list.components.NotesContainer;
 import com.example.notes.views.list.components.PaginationComp;
 import com.example.notes.views.list.components.note.NoteComponent;
 import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
-import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
+import com.example.notes.views.list.components.note.NoteEvents.NotesComponents;
 import com.example.notes.views.list.events.CountingNotesEvent;
 import com.example.notes.views.list.events.PinNoteEvent;
 import com.example.notes.views.list.events.SearchNoteEvent;
@@ -45,9 +45,9 @@ public class NotesList extends VerticalLayout  {
     List<Note> selectedNotes = new LinkedList<>();
 
     protected final NoteService noteService;
-    protected final NoteComponents noteComponents;
+    protected final NotesComponents noteComponents;
     protected final NoteClickListeners noteClickListeners;
-    NotesList(NoteService noteService, NoteComponents noteComponents, NoteClickListeners noteClickListeners) {
+    NotesList(NoteService noteService, NotesComponents noteComponents, NoteClickListeners noteClickListeners) {
         this.noteService = noteService;
         this.noteComponents = noteComponents;
         this.noteClickListeners = noteClickListeners;
@@ -83,16 +83,22 @@ public class NotesList extends VerticalLayout  {
 
     protected void addComponentsToPage() {
         this.add(
-                new NewNoteForm(noteService),
+                makeNewNoteForm(),
                 getAllNotes(),
                 message
                 ,new PaginationComp(10,201)
-                // new PaginationComp(8,noteService.countNotes())
+                // new PaginationComp(8, noteService.countNotes())
         );
     }
 
     public TextField getSearch() {
         return search;
+    }
+
+    private Component makeNewNoteForm(){
+       NewNoteForm newNoteForm = new NewNoteForm(noteService);
+       newNoteForm.setLabel(null);
+       return newNoteForm;
     }
 
     protected void createMessage(){

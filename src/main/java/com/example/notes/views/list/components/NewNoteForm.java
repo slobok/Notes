@@ -1,5 +1,6 @@
 package com.example.notes.views.list.components;
 
+import com.example.notes.data.Label;
 import com.example.notes.data.Note;
 import com.example.notes.services.NoteService;
 import com.example.notes.views.list.events.CountingNotesEvent;
@@ -15,8 +16,10 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 
+
 public class NewNoteForm extends VerticalLayout {
 
+   String labelNameRouteParameter;
     private final NoteService noteService;
     public NewNoteForm(NoteService noteService){
         this.noteService = noteService;
@@ -69,9 +72,18 @@ public class NewNoteForm extends VerticalLayout {
         this.add(notesTitle, textArea, createNoteButton);
     }
 
+    public void setLabel(String labelName){
+        this.labelNameRouteParameter = labelName;
+    }
     private void createNewNote(TextField notesTitle, TextArea textArea) {
         String noteColor = "#FFFAF0";
-        this.noteService.saveNote(new Note(notesTitle.getValue(), textArea.getValue(), 1L, noteColor));
+        if(labelNameRouteParameter == null){
+            this.noteService.saveNote(new Note(notesTitle.getValue(), textArea.getValue(), 1L, noteColor));
+        }
+        else {
+             Note note = new Note(notesTitle.getValue(), textArea.getValue(), 1L, noteColor);
+             noteService.addLabelAndNote(note, labelNameRouteParameter);
+        }
         notesTitle.setValue("");
         textArea.setValue("");
         ComponentUtil.fireEvent(UI.getCurrent(), new NoteCreatedEvent(this, false));

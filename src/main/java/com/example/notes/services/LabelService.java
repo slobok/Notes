@@ -60,9 +60,9 @@ public class LabelService {
         this.labelRepository.delete(label);;
     }
 
-    public Label findLabelByName(String labelName){
+    public Label findLabelByName(String labelName) throws IllegalArgumentException{
         return this.labelRepository.findByName(labelName)
-                .orElseThrow(() -> new IllegalArgumentException("Not found label wiht name" + labelName   ));
+                .orElseThrow(() -> new IllegalArgumentException("Not found label with name" + labelName   ));
     }
 
     @Transactional

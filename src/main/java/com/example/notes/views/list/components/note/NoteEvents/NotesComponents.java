@@ -23,13 +23,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class NoteComponents {
+public class NotesComponents {
 
     private final NoteComponentsEvents noteComponentsEvents;
     private final ZippingFiles zippingFiles;
     private final FajlService fajlService;
     private final FileContentService fileContentService;
-    public NoteComponents(NoteComponentsEvents noteComponentsEvents, ZippingFiles zippingFiles, FajlService fajlService, FileContentService fileContentService){
+    public NotesComponents(NoteComponentsEvents noteComponentsEvents, ZippingFiles zippingFiles, FajlService fajlService, FileContentService fileContentService){
         this.noteComponentsEvents = noteComponentsEvents;
         this.zippingFiles = zippingFiles;
         this.fajlService = fajlService;
@@ -60,7 +60,6 @@ public class NoteComponents {
             dialog.close();
         });
         dialog.add(closeDialog);
-
         dialog.setCloseOnOutsideClick(true);
         VerticalLayout layoutLinks = new VerticalLayout();
         List<Fajl> noteFiles = fajlService.getNoteFiles(note);
@@ -201,5 +200,4 @@ public class NoteComponents {
         });
 
     }*/
-
 }

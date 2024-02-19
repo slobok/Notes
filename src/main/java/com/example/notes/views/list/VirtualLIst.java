@@ -5,7 +5,7 @@ import com.example.notes.services.NoteService;
 import com.example.notes.views.list.components.NewNoteForm;
 import com.example.notes.views.list.components.note.NoteComponent;
 import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
-import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
+import com.example.notes.views.list.components.note.NoteEvents.NotesComponents;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -23,9 +23,9 @@ import java.util.List;
 public class VirtualLIst extends Div {
 
     private final NoteService noteService;
-    private final NoteComponents noteComponents;
+    private final NotesComponents noteComponents;
     private final NoteClickListeners noteClickListeners;
-    public VirtualLIst(NoteService noteService, NoteComponents noteComponents, NoteClickListeners noteClickListeners){
+    public VirtualLIst(NoteService noteService, NotesComponents noteComponents, NoteClickListeners noteClickListeners){
         this.noteService = noteService;
         this.noteComponents = noteComponents;
         this.noteClickListeners = noteClickListeners;

@@ -21,10 +21,8 @@ public class NotesTableView  extends VerticalLayout {
         grid.addColumn(Note::getText).setHeader("Notes_text");
         grid.addColumn(Note::getNoteColor).setHeader("Notes_color");
 
-
         //Pogledaj sta radi funkcija ispod isklučuje renderovanje
         //grid.setAllRowsVisible(true);
-
 
         DataProvider<Note, Void> dataProvider =
                 DataProvider.fromCallbacks(

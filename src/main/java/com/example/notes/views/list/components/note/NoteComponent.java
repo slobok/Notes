@@ -3,7 +3,7 @@ package com.example.notes.views.list.components.note;
 import com.example.notes.data.Label;
 import com.example.notes.data.Note;
 import com.example.notes.views.list.components.note.NoteEvents.NoteClickListeners;
-import com.example.notes.views.list.components.note.NoteEvents.NoteComponents;
+import com.example.notes.views.list.components.note.NoteEvents.NotesComponents;
 import com.example.notes.views.list.events.SelectNoteEvent;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -36,9 +36,9 @@ public class NoteComponent extends VerticalLayout {
     private Component multiSelectLComboBox;
     private HorizontalLayout chooseColor;
     protected boolean selected = false;
-    protected final NoteComponents noteComponents;
+    protected final NotesComponents noteComponents;
     protected final NoteClickListeners noteClickListeners;
-    public NoteComponent(Note note, NoteComponents noteComponents, NoteClickListeners noteClickListeners){
+    public NoteComponent(Note note, NotesComponents noteComponents, NoteClickListeners noteClickListeners){
         this.note = note;
         this.noteComponents = noteComponents;
         this.noteClickListeners = noteClickListeners;

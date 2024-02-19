@@ -12,7 +12,7 @@ public class Label {
     @Column(name = "label_id")
     private  Long labelId;
 
-    //@Column(unique=true)
+    @Column(unique=true)
     private String name;
     private Long userId;
 
@@ -21,7 +21,7 @@ public class Label {
             name = "note_Label",
             joinColumns = @JoinColumn(name = "label_id"),
             inverseJoinColumns = @JoinColumn(name = "note_id"))
-    private   List<Note> labeledNotes = new ArrayList<>();
+    private List<Note> labeledNotes = new ArrayList<>();
 
 
     public Label(){}
@@ -63,7 +63,7 @@ public class Label {
     }
 
     public void setLabeledNotes(List<Note> labeledNotes) {
-        this.labeledNotes = labeledNotes;
+        this.labeledNotes.addAll(labeledNotes);
     }
 
     @Override
