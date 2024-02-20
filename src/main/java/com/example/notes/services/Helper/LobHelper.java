@@ -12,7 +12,6 @@ public class LobHelper {
 
     private final SessionFactory sessionFactory;
 
-    @Autowired
     public LobHelper(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
